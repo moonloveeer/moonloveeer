@@ -25,8 +25,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          export CXXFLAGS="${CXXFLAGS} -std=c++11 -include cstdint"
-          python -m pip install -r requirements.txt
+          grep -v '^pyqrllib' requirements.txt > /tmp/ci-requirements.txt
+          python -m pip install -r /tmp/ci-requirements.txt
           python -m pip install pytest
 
       - name: Run pytest suite
