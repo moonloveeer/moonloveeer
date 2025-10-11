@@ -31,6 +31,6 @@ jobs:
 
       - name: Run pytest suite
         env:
-          PYTHONPATH: ${{ github.workspace }}
+          PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/qrl
         run: |
           python -m pytest tests/test_wallet_send.py tests/test_api_endpoints.py
