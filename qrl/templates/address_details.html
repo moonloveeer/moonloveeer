@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address {{ address[:16] }}... - QRL Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .explorer-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        .address-header {
+            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 2rem;
+        }
+        .hash-display {
+            word-break: break-all;
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .balance-highlight {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fdcb6e;
+        }
+        .transaction-item {
+            border-left: 4px solid #00b894;
+            padding-left: 15px;
+            margin-bottom: 10px;
+        }
+        .transaction-item.sent {
+            border-left-color: #fdcb6e;
+        }
+        .transaction-item.received {
+            border-left-color: #00b894;
+        }
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+        }
+        .breadcrumb-item a {
+            color: #fdcb6e;
+            text-decoration: none;
+        }
+        .breadcrumb-item.active {
+            color: #6c757d;
+        }
+        .transaction-table th {
+            background-color: #f8f9fa;
+            border-top: none;
+        }
+        .badge-sent {
+            background-color: #fdcb6e;
+        }
+        .badge-received {
+            background-color: #00b894;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('explorer') }}">Explorer</a></li>
+                <li class="breadcrumb-item"><a href="#">Addresses</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ address[:16] }}...</li>
+            </ol>
+        </nav>
+
+        <!-- Address Header -->
+        <div class="explorer-card">
+            <div class="address-header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1 class="mb-3">Address</h1>
+                        <div class="hash-display mb-4">{{ address }}</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <strong>Total Transactions:</strong><br>
+                                    <span class="h5">{{ transactions|length }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <strong>First Seen:</strong><br>
+                                    <span class="h6">
+                                        {% if transactions %}
+                                        {{ transactions[-1].block.timestamp|datetime }}
+                                        {% else %}
+                                        Never
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="balance-highlight mb-3">{{ "%.6f"|format(balance) }} QRL</div>
+                            <div class="text-white-50 mb-2">Current Balance</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Statistics -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ balance|round(6) }}</div>
+                            <div class="text-muted">Balance (QRL)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ sent_count }}</div>
+                            <div class="text-muted">Sent Txs</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ received_count }}</div>
+                            <div class="text-muted">Received Txs</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ total_sent|round(6) }}</div>
+                            <div class="text-muted">Total Sent</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="explorer-card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Transaction History ({{ transactions|length }})</h5>
+
+                {% if transactions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover transaction-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Transaction Hash</th>
+                                    <th>Block</th>
+                                    <th>Amount</th>
+                                    <th>Fee</th>
+                                    <th>Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tx_item in transactions %}
+                                <tr>
+                                    <td>
+                                        {% if tx_item.type == 'sent' %}
+                                        <span class="badge badge-sent">Sent</span>
+                                        {% else %}
+                                        <span class="badge badge-received">Received</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="hash-display">{{ tx_item.tx.transaction_hash[:32] }}...</span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('block_details', block_hash=tx_item.block.hash) }}">
+                                            {{ tx_item.block.index }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if tx_item.type == 'sent' %}
+                                        <span class="text-danger">-{{ "%.6f"|format(tx_item.tx.amount + tx_item.tx.fee) }}</span>
+                                        {% else %}
+                                        <span class="text-success">+{{ "%.6f"|format(tx_item.tx.amount) }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ "%.6f"|format(tx_item.tx.fee) }}</td>
+                                    <td>{{ tx_item.block.timestamp|datetime }}</td>
+                                    <td>
+                                        <a href="{{ url_for('transaction_details', tx_hash=tx_item.tx.transaction_hash) }}" class="btn btn-sm btn-outline-primary">Details</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-4">
+                        <h6>No transactions found</h6>
+                        <p>This address hasn't been involved in any transactions yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Address Analysis -->
+        {% if transactions %}
+        <div class="explorer-card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Address Analysis</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <h6>Transaction Summary</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Total Transactions</span>
+                                    <span class="badge bg-primary">{{ transactions|length }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Sent Transactions</span>
+                                    <span class="badge badge-sent">{{ sent_count }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Received Transactions</span>
+                                    <span class="badge badge-received">{{ received_count }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Net Flow</span>
+                                    <span class="badge {% if balance >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ "+" if balance >= 0 else "" }}{{ "%.6f"|format(balance) }} QRL
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            <h6>Volume Summary</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Total Received</span>
+                                    <span class="badge bg-success">{{ "%.6f"|format(total_received) }} QRL</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Total Sent</span>
+                                    <span class="badge badge-sent">{{ "%.6f"|format(total_sent) }} QRL</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Total Fees Paid</span>
+                                    <span class="badge bg-warning">{{ "%.6f"|format(total_fees) }} QRL</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Current Balance</span>
+                                    <span class="badge {% if balance >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ "%.6f"|format(balance) }} QRL
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Navigation -->
+        <div class="text-center">
+            <a href="{{ url_for('explorer') }}" class="btn btn-primary">Back to Explorer</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

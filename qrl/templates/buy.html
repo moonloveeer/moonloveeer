@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Buy QRL{% endblock %}
+
+{% block extra_css %}
+<style nonce="{{ csp_nonce }}">
+    .buy-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        background-color: white;
+    }
+    .payment-option {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: transform 0.1s ease-in-out;
+    }
+    .payment-option:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-2px);
+    }
+    .payment-option.selected {
+        border-color: #6c5ce7;
+        background-color: #f3f0ff;
+    }
+    .payment-icon {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+    }
+    .custom-amount-container.d-none {
+        display: none !important;
+    }
+    .summary-card {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 16px;
+    }
+    .summary-value {
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+    .wallet-hint {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="buy-card p-4">
+                <div class="d-flex justify-content-between flex-column flex-md-row align-items-start align-items-md-center gap-3">
+                    <div>
+                        <h2 class="mb-1">Buy QRL</h2>
+                        <p class="text-muted mb-0">Choose how many tokens you would like and how you want to pay.</p>
+                    </div>
+                    {% if wallet_address %}
+                    <div class="text-muted wallet-hint text-md-end">
+                        <span class="d-block">Purchasing to wallet:</span>
+                        <span class="fw-semibold">{{ wallet_address[:10] }}...{{ wallet_address[-8:] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="alert alert-info mt-3">
+                    <strong>Heads up:</strong> Purchases are simulated. Connect a real processor when you're ready to go live.
+                </div>
+
+                <form id="buy-form" action="{{ url_for('simulate_purchase') }}" method="post" class="mt-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="row g-4">
+                        <div class="col-md-7">
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Select Amount</label>
+                                <div class="row">
+                                    <div class="col-6 col-md-6">
+                                        <div class="payment-option text-center amount-option selected" data-amount="100">
+                                            <h4 class="mb-1">100 QRL</h4>
+                                            <p class="mb-0 text-muted">≈ $10.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-6">
+                                        <div class="payment-option text-center amount-option" data-amount="500">
+                                            <h4 class="mb-1">500 QRL</h4>
+                                            <p class="mb-0 text-muted">≈ $50.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-6">
+                                        <div class="payment-option text-center amount-option" data-amount="1000">
+                                            <h4 class="mb-1">1000 QRL</h4>
+                                            <p class="mb-0 text-muted">≈ $100.00</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-6">
+                                        <div class="payment-option text-center amount-option" data-amount="custom">
+                                            <h4 class="mb-1">Custom</h4>
+                                            <p class="mb-0 text-muted">Enter amount</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="custom-amount-container" class="mt-3 custom-amount-container d-none">
+                                    <label for="custom-amount" class="form-label">Custom QRL amount</label>
+                                    <input type="number" class="form-control" id="custom-amount" placeholder="e.g. 250" min="0" step="0.000001">
+                                </div>
+                                <input type="hidden" id="selected-amount" name="amount" value="100">
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Payment Method</label>
+                                <div class="row">
+                                    <div class="col-12 col-md-4">
+                                        <div class="payment-option text-center method-option selected" data-method="credit">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Credit Card" class="payment-icon">
+                                            <p class="mb-0 mt-2">Credit Card</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="payment-option text-center method-option" data-method="paypal">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/196/196566.png" alt="PayPal" class="payment-icon">
+                                            <p class="mb-0 mt-2">PayPal</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="payment-option text-center method-option" data-method="crypto">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/5968/5968260.png" alt="Crypto" class="payment-icon">
+                                            <p class="mb-0 mt-2">Crypto</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="payment-method" name="payment_method" value="credit">
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <div class="summary-card h-100">
+                                <h5 class="mb-3">Purchase summary</h5>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Amount</span>
+                                    <span id="summary-amount" class="summary-value">100 QRL</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Payment method</span>
+                                    <span id="summary-method" class="summary-value">Credit Card</span>
+                                </div>
+                                {% if wallet_address %}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted">Destination</span>
+                                    <span class="summary-value">{{ wallet_address[:10] }}...{{ wallet_address[-8:] }}</span>
+                                </div>
+                                {% endif %}
+                                <hr class="my-3">
+                                <p class="text-muted small mb-0">This demo does not move real funds. Use it to validate your checkout flow before launching.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="purchase-errors" class="alert alert-danger d-none" role="alert"></div>
+
+                    <div class="d-grid gap-2 gap-md-3 d-md-flex justify-content-md-end mt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-lg">Complete Purchase</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+    document.addEventListener('DOMContentLoaded', () => {
+        const amountOptions = Array.from(document.querySelectorAll('.amount-option'));
+        const methodOptions = Array.from(document.querySelectorAll('.method-option'));
+        const customContainer = document.getElementById('custom-amount-container');
+        const customAmountInput = document.getElementById('custom-amount');
+        const selectedAmountInput = document.getElementById('selected-amount');
+        const paymentMethodInput = document.getElementById('payment-method');
+        const summaryAmount = document.getElementById('summary-amount');
+        const summaryMethod = document.getElementById('summary-method');
+        const errorBox = document.getElementById('purchase-errors');
+        const form = document.getElementById('buy-form');
+
+        const methodLabels = {
+            credit: 'Credit Card',
+            paypal: 'PayPal',
+            crypto: 'Crypto'
+        };
+
+        function updateSummary() {
+            const amountValue = selectedAmountInput.value || '0';
+            summaryAmount.textContent = `${amountValue} QRL`;
+            const methodValue = paymentMethodInput.value;
+            summaryMethod.textContent = methodLabels[methodValue] || methodValue;
+        }
+
+        function setSelectedAmount(amount) {
+            const amountStr = String(amount);
+            amountOptions.forEach(option => {
+                option.classList.toggle('selected', option.dataset.amount === amountStr);
+            });
+
+            if (amountStr === 'custom') {
+                customContainer.classList.remove('d-none');
+                selectedAmountInput.value = customAmountInput.value || '';
+                customAmountInput.focus();
+            } else {
+                customContainer.classList.add('d-none');
+                selectedAmountInput.value = amountStr;
+            }
+            updateSummary();
+        }
+
+        function setSelectedPayment(method) {
+            methodOptions.forEach(option => {
+                option.classList.toggle('selected', option.dataset.method === method);
+            });
+            paymentMethodInput.value = method;
+            updateSummary();
+        }
+
+        amountOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                if (option.dataset.amount === 'custom') {
+                    setSelectedAmount('custom');
+                } else {
+                    const parsed = parseInt(option.dataset.amount, 10);
+                    setSelectedAmount(Number.isNaN(parsed) ? 'custom' : parsed);
+                }
+            });
+        });
+
+        methodOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                setSelectedPayment(option.dataset.method);
+            });
+        });
+
+        if (customAmountInput) {
+            customAmountInput.addEventListener('input', () => {
+                if (!customContainer.classList.contains('d-none')) {
+                    const value = customAmountInput.value.trim();
+                    selectedAmountInput.value = value;
+                    updateSummary();
+                }
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', (event) => {
+                const amountValue = parseFloat(selectedAmountInput.value);
+                if (!amountValue || amountValue <= 0) {
+                    event.preventDefault();
+                    errorBox.textContent = 'Enter a positive amount of QRL to complete the purchase.';
+                    errorBox.classList.remove('d-none');
+                    if (!customContainer.classList.contains('d-none')) {
+                        customAmountInput.focus();
+                    }
+                } else {
+                    errorBox.classList.add('d-none');
+                    errorBox.textContent = '';
+                }
+            });
+        }
+
+        updateSummary();
+    });
+</script>
+{% endblock %}

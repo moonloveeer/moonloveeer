@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QRL Wallet{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style nonce="{{ csp_nonce }}">
+        body {
+            background-color: #f8f9fa;
+        }
+        .wallet-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .balance-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .address-display {
+            font-family: monospace;
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .action-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+        .qr-code {
+            max-width: 200px;
+            margin: 0 auto;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">QRL Wallet</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('explorer') }}">Block Explorer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('buy') }}">Buy QRL</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if is_logged_in %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user"></i> {{ username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                {% if wallet_address %}
+                                    <li><span class="dropdown-item-text small text-muted">
+                                        <i class="fas fa-wallet"></i> {{ wallet_address[:10] }}...{{ wallet_address[-8:] }}
+                                    </span></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="{{ url_for('logout') }}" onclick="return confirm('Are you sure you want to logout?')">
+                                <i class="fas fa-power-off"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="container py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 QRL Wallet. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Account Change Modal -->
+    <div class="modal fade" id="accountChangeModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Wallet change detected</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Your browser wallet account no longer matches the logged-in account.
+                        For your security, please re-verify your wallet ownership or logout.
+                    </p>
+                    {% if wallet_address %}
+                    <div class="small text-muted">
+                        Logged in as: <code>{{ wallet_address }}</code>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ignore</button>
+                    <button type="button" id="accountChangeReverify" class="btn btn-primary">Re-verify</button>
+                    <button type="button" id="accountChangeLogout" class="btn btn-outline-danger">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script nonce="{{ csp_nonce }}">
+        // Enable Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Initialize wallet connection
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in and has a wallet connected
+            const authStatus = document.getElementById('auth-status');
+            const connectWalletBtn = document.getElementById('connect-wallet');
+            
+            if (connectWalletBtn) {
+                connectWalletBtn.addEventListener('click', async function() {
+                    try {
+                        // In a real app, this would connect to a browser extension like MetaMask
+                        // For now, we'll just show an alert
+                        alert('Wallet connection would be implemented here. In a real app, this would connect to a browser wallet.');
+                        
+                        // After successful connection, you would update the UI
+                        // and make an API call to /wallet/connect with the wallet details
+                    } catch (error) {
+                        console.error('Error connecting wallet:', error);
+                        alert('Failed to connect wallet: ' + error.message);
+                    }
+                });
+            }
+
+            // Attach account/network change handlers only when logged in
+            const isLoggedIn = {{ (is_logged_in or False)|tojson }};
+            const currentWalletAddress = {{ (wallet_address or '')|tojson }};
+
+            if (isLoggedIn && typeof window.ethereum !== 'undefined') {
+                const reverifyBtn = document.getElementById('accountChangeReverify');
+                const logoutBtn = document.getElementById('accountChangeLogout');
+                const modalEl = document.getElementById('accountChangeModal');
+                const modal = modalEl ? new bootstrap.Modal(modalEl) : null;
+
+                if (reverifyBtn) {
+                    reverifyBtn.addEventListener('click', () => {
+                        window.location.href = '/login';
+                    });
+                }
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        window.location.href = '/logout';
+                    });
+                }
+
+                const maybePromptReverify = (newAddress) => {
+                    try {
+                        if (!newAddress || !currentWalletAddress) return;
+                        const a = String(newAddress).toLowerCase();
+                        const b = String(currentWalletAddress).toLowerCase();
+                        if (a !== b && modal) {
+                            modal.show();
+                        }
+                    } catch (e) {
+                        console.warn('Account change check failed:', e);
+                    }
+                };
+
+                // Accounts changed
+                try {
+                    window.ethereum.removeAllListeners && window.ethereum.removeAllListeners('accountsChanged');
+                } catch (e) {}
+                window.ethereum.on && window.ethereum.on('accountsChanged', (accounts) => {
+                    const next = accounts && accounts.length ? accounts[0] : null;
+                    maybePromptReverify(next);
+                });
+
+                // Network changed -> optional reload
+                try {
+                    window.ethereum.removeAllListeners && window.ethereum.removeAllListeners('chainChanged');
+                } catch (e) {}
+                window.ethereum.on && window.ethereum.on('chainChanged', (_chainId) => {
+                    // Simple approach: reload to ensure app state is consistent
+                    window.location.reload();
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

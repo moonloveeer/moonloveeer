@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block {{ block.index }} - QRL Explorer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .explorer-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: white;
+        }
+        .block-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 2rem;
+        }
+        .hash-display {
+            word-break: break-all;
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .transaction-item {
+            border-left: 4px solid #00b894;
+            padding-left: 15px;
+            margin-bottom: 10px;
+        }
+        .transaction-item.sent {
+            border-left-color: #fdcb6e;
+        }
+        .transaction-item.received {
+            border-left-color: #00b894;
+        }
+        .breadcrumb {
+            background-color: transparent;
+            padding: 0;
+        }
+        .breadcrumb-item a {
+            color: #6c5ce7;
+            text-decoration: none;
+        }
+        .breadcrumb-item.active {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('explorer') }}">Explorer</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Block {{ block.index }}</li>
+            </ol>
+        </nav>
+
+        <!-- Block Header -->
+        <div class="explorer-card">
+            <div class="block-header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h1 class="mb-3">Block #{{ block.index }}</h1>
+                        <div class="hash-display mb-3">{{ block.hash }}</div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <strong>Timestamp:</strong><br>
+                                    {{ block.timestamp|datetime }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <strong>Previous Hash:</strong><br>
+                                    <span class="hash-display">{{ block.previous_hash[:32] }}...</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-2">
+                                    <strong>Merkle Root:</strong><br>
+                                    <span class="hash-display">{{ block.merkle_root[:32] }}...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h3 class="mb-3">{{ total_transactions }}</h3>
+                            <div class="text-white-50 mb-2">Transactions</div>
+                            <div class="h4 mb-3">{{ "%.2f"|format(total_volume) }} QRL</div>
+                            <div class="text-white-50 mb-2">Total Volume</div>
+                            <div class="h5">{{ "%.2f"|format(mining_reward) }} QRL</div>
+                            <div class="text-white-50">Mining Reward</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Block Statistics -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ block.nonce }}</div>
+                            <div class="text-muted">Nonce</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ block.transactions|length }}</div>
+                            <div class="text-muted">Transactions</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ "%.6f"|format(total_volume) }}</div>
+                            <div class="text-muted">Volume (QRL)</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center p-3">
+                            <div class="h4 mb-1">{{ "%.6f"|format(total_fees) }}</div>
+                            <div class="text-muted">Total Fees</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions List -->
+        <div class="explorer-card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Transactions ({{ block.transactions|length }})</h5>
+
+                {% if block.transactions %}
+                    <div class="list-group list-group-flush">
+                        {% for tx in block.transactions %}
+                        <div class="list-group-item p-4 transaction-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">Transaction</h6>
+                                        <a href="{{ url_for('transaction_details', tx_hash=tx.transaction_hash) }}" class="btn btn-sm btn-outline-primary">Details</a>
+                                    </div>
+                                    <div class="hash-display mb-3">{{ tx.transaction_hash }}</div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <strong>From:</strong><br>
+                                                <span class="hash-display">{{ tx.sender[:32] }}...</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <strong>To:</strong><br>
+                                                <span class="hash-display">{{ tx.recipient[:32] }}...</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-2">
+                                                <strong>Amount:</strong><br>
+                                                <span class="h5 text-success">{{ "%.6f"|format(tx.amount) }} QRL</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-md-6">
+                                            <div class="mb-1">
+                                                <strong>Fee:</strong> {{ "%.6f"|format(tx.fee) }} QRL
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-1">
+                                                <strong>Timestamp:</strong> {{ tx.timestamp|datetime }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted p-4">
+                        <h6>No transactions in this block</h6>
+                        <p>This block only contains the mining reward.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="d-flex justify-content-between mb-4">
+            <div>
+                {% if block.index > 0 %}
+                <a href="{{ url_for('block_details', block_hash=blockchain.chain[block.index - 1].hash) }}" class="btn btn-outline-primary">← Previous Block</a>
+                {% endif %}
+            </div>
+            <div>
+                <a href="{{ url_for('explorer') }}" class="btn btn-primary">Back to Explorer</a>
+            </div>
+            <div>
+                {% if block.index < blockchain.chain|length - 1 %}
+                <a href="{{ url_for('block_details', block_hash=blockchain.chain[block.index + 1].hash) }}" class="btn btn-outline-primary">Next Block →</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

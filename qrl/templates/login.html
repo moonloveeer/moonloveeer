@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}Login - QRL Wallet{% endblock %}
+
+{% block extra_css %}
+<style nonce="{{ csp_nonce }}">
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 1.5rem 0;
+    }
+    
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .divider-text {
+        padding: 0 10px;
+        color: #6c757d;
+    }
+    
+    #web3LoginContainer {
+        margin-top: 1.5rem;
+    }
+    
+    #web3LoginButton {
+        width: 100%;
+    }
+    
+    #web3LoginMessage {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    #providerButtons {
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .provider-button {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 0.65rem 0.85rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.5rem;
+        background-color: #fff;
+        text-align: left;
+        transition: all 0.15s ease-in-out;
+        cursor: pointer;
+    }
+
+    .provider-button.active {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .provider-button:hover {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15);
+    }
+    
+    #metamaskIcon {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">Login</h2>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <!-- Web3 Wallet Login -->
+                    <div id="web3LoginContainer" class="mb-4">
+                        <button id="web3LoginButton" type="button" class="btn btn-outline-primary">
+                            Connect with Selected Wallet
+                        </button>
+                        <div id="web3LoginMessage" class="text-center">
+                            Select a wallet below or tap it directly to connect.
+                        </div>
+
+                        <div id="providerSelection" class="mt-3">
+                            <div class="form-text mb-2">Select a wallet provider:</div>
+                            <div id="providerButtons">
+                                <button type="button" class="provider-button" data-provider="metamask" data-provider-label="MetaMask">
+                                    <div>
+                                        <strong>MetaMask</strong>
+                                        <div class="small text-muted">Browser extension & mobile</div>
+                                    </div>
+                                </button>
+                                <button type="button" class="provider-button" data-provider="trust" data-provider-label="Trust Wallet">
+                                    <div>
+                                        <strong>Trust Wallet</strong>
+                                        <div class="small text-muted">Mobile & browser extension</div>
+                                    </div>
+                                </button>
+                                <button type="button" class="provider-button" data-provider="coinbase" data-provider-label="Coinbase Wallet">
+                                    <div>
+                                        <strong>Coinbase Wallet</strong>
+                                        <div class="small text-muted">Extension & mobile</div>
+                                    </div>
+                                </button>
+                                <button type="button" class="provider-button" data-provider="phantom" data-provider-label="Phantom Wallet">
+                                    <div>
+                                        <strong>Phantom</strong>
+                                        <div class="small text-muted">Mobile & extension (EVM beta)</div>
+                                    </div>
+                                </button>
+                                <button type="button" class="provider-button" data-provider="auto" data-provider-label="Auto Detect">
+                                    <div>
+                                        <strong>Auto Detect</strong>
+                                        <div class="small text-muted">Let QRL pick the first available wallet</div>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="form-text mt-2">Wallet not listed? Choose Auto Detect.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center text-muted small">
+                        Web3 wallets only. Legacy username/password logins are disabled.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Web3 Login Modal -->
+<div class="modal fade" id="web3LoginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sign Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please sign the message in your wallet to verify your identity.</p>
+                <div class="alert alert-info web3-sign-message" id="web3SignMessage">
+                    Loading message...
+                </div>
+                <div class="text-center web3-loading" id="web3Loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Waiting for signature...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script nonce="{{ csp_nonce }}">
+// Check if Web3 is injected
+const isWeb3Available = typeof window.ethereum !== 'undefined';
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+const rawCsrfToken = getCookie('XSRF-TOKEN');
+const csrfToken = rawCsrfToken ? decodeURIComponent(rawCsrfToken) : '';
+
+// Provider selection state
+const providerSelectionEl = document.getElementById('providerSelection');
+const providerButtons = Array.from(document.querySelectorAll('.provider-button'));
+let selectedProvider = 'auto';
+
+providerButtons.forEach(btn => {
+    if (btn.dataset.provider === selectedProvider) {
+        btn.classList.add('active');
+    }
+});
+
+function getProviderByName(name) {
+    const injected = window.ethereum;
+    const aggregatedProviders = Array.isArray(injected?.providers) ? injected.providers : [];
+    const fallbackProviders = [];
+
+    if (injected && !aggregatedProviders.length) {
+        fallbackProviders.push(injected);
+    }
+
+    const phantomEvm = window.phantom?.ethereum || null;
+    const coinbaseExt = window.coinbaseWalletExtension || null;
+    const trustExt = window.trustwallet?.ethereum || null;
+
+    const allProviders = [
+        ...aggregatedProviders,
+        ...fallbackProviders,
+        phantomEvm,
+        coinbaseExt,
+        trustExt
+    ].filter(Boolean);
+
+    console.debug('Detected Web3 providers:', allProviders.map(p => ({
+        name: p?.name || 'unknown',
+        isMetaMask: Boolean(p?.isMetaMask),
+        isCoinbaseWallet: Boolean(p?.isCoinbaseWallet),
+        isTrust: Boolean(p?.isTrust || p?.isTrustWallet),
+        isPhantom: Boolean(p?.isPhantom)
+    })));
+
+    const findInAggregated = predicate => {
+        if (!aggregatedProviders.length) {
+            return null;
+        }
+        return aggregatedProviders.find(predicate) || null;
+    };
+
+    const matchesTrust = p => Boolean(p && (p.isTrust || p.isTrustWallet || /trust/i.test(p.name || '')));
+    const matchesCoinbase = p => Boolean(p && (p.isCoinbaseWallet || /coinbase/i.test(p.name || '')));
+    const matchesPhantom = p => Boolean(p && (p.isPhantom || /phantom/i.test(p.name || '')));
+    const matchesMetaMask = p => Boolean(p && p.isMetaMask && !matchesTrust(p) && !matchesCoinbase(p) && !matchesPhantom(p));
+
+    switch (name) {
+        case 'metamask':
+            return findInAggregated(matchesMetaMask) || (matchesMetaMask(injected) ? injected : null);
+        case 'coinbase':
+            return coinbaseExt || findInAggregated(matchesCoinbase);
+        case 'trust':
+            return trustExt || findInAggregated(matchesTrust);
+        case 'phantom':
+            return phantomEvm || findInAggregated(matchesPhantom);
+        case 'auto':
+        default:
+            return allProviders[0] || null;
+    }
+}
+
+async function connectWithProvider(providerName) {
+    if (!isWeb3Available) {
+        alert('No Web3 wallet detected. Please install MetaMask, Trust Wallet, Coinbase Wallet, or Phantom.');
+        window.open('https://metamask.io/download/', '_blank');
+        return;
+    }
+
+    try {
+        let provider = getProviderByName(providerName);
+
+        if (!provider) {
+            if (providerName === 'trust') {
+                alert('Trust Wallet is not injected in this browser. Please open this site inside the Trust Wallet browser or install the Trust Wallet extension.');
+                window.open('https://trustwallet.com/browser-extension', '_blank');
+                return;
+            }
+            if (providerName === 'metamask') {
+                alert('MetaMask not detected. Please install the MetaMask browser extension or mobile app and try again.');
+                window.open('https://metamask.io/download/', '_blank');
+                return;
+            }
+            if (providerName === 'coinbase') {
+                alert('Coinbase Wallet not detected. Please install the Coinbase Wallet extension or app and try again.');
+                window.open('https://www.coinbase.com/wallet/downloads', '_blank');
+                return;
+            }
+            if (providerName === 'phantom') {
+                alert('Phantom EVM provider not detected. Please install the Phantom extension or use the mobile app with the in-app browser.');
+                window.open('https://phantom.app/download', '_blank');
+                return;
+            }
+            alert('No compatible wallet provider found. Please install your preferred wallet or choose Auto Detect.');
+            return;
+        }
+
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
+        const walletAddress = accounts[0];
+        
+        // Show modal with sign message
+        const modal = new bootstrap.Modal(document.getElementById('web3LoginModal'));
+        modal.show();
+        
+        // Get the message to sign from the server
+        const response = await fetch('/web3/init-login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken || ''
+            },
+            body: JSON.stringify({ wallet_address: walletAddress }),
+            credentials: 'include'
+        });
+
+        console.log('Init login response:', response);
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Init login error payload:', errorText);
+            throw new Error(`Server returned ${response.status} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(`Server returned error: ${data.error}`);
+        }
+
+        // Display the message to the user
+        const messageElement = document.getElementById('web3SignMessage');
+        messageElement.textContent = data.message;
+        messageElement.style.whiteSpace = 'pre-line'; // Preserve newlines in the message
+        const loadingElement = document.getElementById('web3Loading');
+        if (!loadingElement) {
+            throw new Error('Unable to locate loading indicator (web3Loading).');
+        }
+        loadingElement.style.removeProperty('display');
+        
+        try {
+            // Sign the message - normalize to hex and try common param orders
+            let signature;
+            const toHexMessage = (str) => {
+                const bytes = new TextEncoder().encode(str);
+                return '0x' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+            };
+            const hexMsg = toHexMessage(data.message);
+            try {
+                // Most wallets expect [hexMessage, address]
+                signature = await provider.request({
+                    method: 'personal_sign',
+                    params: [hexMsg, walletAddress],
+                });
+            } catch (e1) {
+                console.warn('personal_sign(hex, address) failed, retrying with reversed params...', e1);
+                try {
+                    // Some providers use [address, hexMessage]
+                    signature = await provider.request({
+                        method: 'personal_sign',
+                        params: [walletAddress, hexMsg],
+                    });
+                } catch (e2) {
+                    console.warn('personal_sign(address, hex) failed, retrying with plain text...', e2);
+                    // Fallback: plain text then address
+                    signature = await provider.request({
+                        method: 'personal_sign',
+                        params: [data.message, walletAddress],
+                    });
+                }
+            }
+            
+            // Detect if we're on mobile or in a mobile wallet browser
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isWalletBrowser = typeof window.ethereum !== 'undefined' && (
+                window.ethereum.isMetaMask ||
+                window.ethereum.isTrust ||
+                window.ethereum.isPhantom ||
+                window.ethereum.isCoinbaseWallet
+            );
+
+            console.log('=== WEB3 LOGIN DEBUG ===');
+            console.log('Mobile detection:', { isMobile, isWalletBrowser, userAgent: navigator.userAgent });
+            console.log('Wallet address:', walletAddress);
+            console.log('Signature length:', signature ? signature.length : 0);
+
+            // Show debug info on the login modal
+            const debugInfo = document.getElementById('web3-debug-info') || document.createElement('div');
+            debugInfo.id = 'web3-debug-info';
+            debugInfo.className = 'mt-2 small text-muted';
+            debugInfo.innerHTML = `
+                <strong>Debug Info:</strong><br>
+                Mobile: ${isMobile}, Wallet: ${isWalletBrowser}<br>
+                Address: ${walletAddress ? walletAddress.substring(0, 10) + '...' : 'None'}<br>
+                Signature: ${signature ? '✓ (' + signature.length + ' chars)' : '✗'}
+            `;
+            loadingElement.parentNode.insertBefore(debugInfo, loadingElement.nextSibling);
+
+            const sigParam = encodeURIComponent(signature);
+            const addrParam = encodeURIComponent(walletAddress);
+            const callbackUrl = `/web3/verify-callback?wallet_address=${addrParam}&signature=${sigParam}`;
+
+            // Handle mobile wallet browsers with improved redirect
+            if (isMobile || isWalletBrowser) {
+                console.log('Using mobile wallet login flow with improved redirect');
+
+                // Show completion message
+                loadingElement.innerHTML = `
+                    <div class="text-success">
+                        <i class="bi bi-check-circle-fill" style="font-size: 2rem;"></i>
+                        <p class="mt-2">Signature received! Completing login...</p>
+                        <div id="debug-info" class="mt-2 small text-muted">
+                            Mobile browser detected. Redirecting in 2 seconds...
+                        </div>
+                        <button id="manual-redirect-btn" class="btn btn-outline-primary mt-2 btn-sm">
+                            Skip Wait - Go Now
+                        </button>
+                    </div>
+                `;
+
+                // Navigate to callback URL with a small delay for mobile browsers
+                console.log('Navigating to callback URL:', callbackUrl);
+
+                // Set up manual redirect button
+                document.getElementById('manual-redirect-btn').addEventListener('click', () => {
+                    console.log('Manual redirect clicked');
+                    window.location.href = callbackUrl;
+                });
+
+                // Use a longer delay for mobile browsers
+                setTimeout(() => {
+                    console.log('Executing mobile-friendly redirect...');
+                    window.location.href = callbackUrl;
+                }, 2000);
+
+                return; // Don't do the automatic redirect
+            }
+
+            // Show success message while navigating
+            loadingElement.innerHTML = `
+                <div class="text-success">
+                    <i class="bi bi-check-circle-fill status-icon-large"></i>
+                    <p class="mt-2">Login successful! Finalizing...</p>
+                </div>
+            `;
+
+            // Navigate (server will set HTTP-only cookie and redirect back home)
+            // Add a small delay and fallback for mobile browsers
+            setTimeout(() => {
+                window.location.href = callbackUrl;
+            }, 500);
+            
+        } catch (err) {
+            console.error('Error during Web3 login:', err);
+            alert('Failed to sign message: ' + (err.message || 'Unknown error'));
+            modal.hide();
+        }
+        
+    } catch (err) {
+        console.error('Web3 login error:', err);
+        alert('Error connecting to Web3 wallet: ' + (err.message || 'Unknown error'));
+    }
+}
+
+providerButtons.forEach(button => {
+    button.addEventListener('click', async () => {
+        providerButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        selectedProvider = button.dataset.provider || 'auto';
+        await connectWithProvider(selectedProvider);
+    });
+});
+
+// Web3 Login Handler
+document.getElementById('web3LoginButton').addEventListener('click', async function(e) {
+    e.preventDefault();
+    await connectWithProvider(selectedProvider);
+});
+
+// Note: Do not attach global accountsChanged/chainChanged handlers on the login page,
+// as wallet extensions may emit these events during connect/sign, which can disrupt
+// the login flow. We'll manage account/network changes after a successful login.
+</script>
+{% endblock %}
+
+{% endblock %}

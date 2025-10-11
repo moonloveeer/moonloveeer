@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style nonce="{{ csp_nonce }}">
+    .market-stat-card {
+        font-size: 0.9rem;
+    }
+    .market-stat-card strong {
+        font-size: 1.05rem;
+    }
+    .chart-container {
+        position: relative;
+        height: 240px;
+        width: 100%;
+    }
+    .heading-small {
+        font-size: 1.1rem;
+    }
+    .paragraph-small {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4">QRL Wallet</h1>
+    
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-lg-7 mb-3">
+            <div class="wallet-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0 heading-small">QRL Chain Metrics</h3>
+                    <small class="text-muted">Latest {{ chart_labels|length }} blocks</small>
+                </div>
+                <div class="chart-container">
+                    <canvas id="blockMetricChart"
+                            data-chart-labels='{{ chart_labels|tojson|safe }}'
+                            data-chart-rewards='{{ chart_rewards|tojson|safe }}'
+                            data-chart-supply='{{ chart_supply|tojson|safe }}'></canvas>
+                </div>
+                <div class="mt-3 text-muted paragraph-small">
+                    <p class="mb-2"><strong>Quantum Resistant Ledger (QRL)</strong> is a proof-of-work blockchain purpose-built to stay secure in a post-quantum world. Accounts rely on <em>XMSS</em> hash-based signatures so signatures cannot be forged, even by future quantum computers.</p>
+                    <p class="mb-2">This devnet instance showcases simplified mining, configurable halving schedules, and a lightweight mempool so builders can experiment with QRL economics, block rewards, and validator tooling. All wallet access flows through Web3 signatures—no passwords to steal or brute force.</p>
+                    <p class="mb-0">The dashboard combines current chain health with hardening features you can trust: Web3-only authentication, CSRF safeguards, strict Content Security Policy, and rate-limited mining endpoints. Connect a wallet, mine blocks, and watch supply growth and rewards update in real time.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5 mb-3">
+            <div class="wallet-card p-4 h-100">
+                <h3 class="mb-3 heading-small">Market Snapshot</h3>
+                <div class="row g-2">
+                    {% for stat in market_stats %}
+                        <div class="col-sm-6">
+                            <div class="p-3 border rounded bg-light h-100 market-stat-card">
+                                <span class="text-muted d-block">{{ stat.label }}</span>
+                                <strong>{{ stat.value }}</strong>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if is_logged_in %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="wallet-card p-4">
+                <h3>Your Balance</h3>
+                <div class="balance-display mb-3">
+                    {{ "%.6f"|format(balance) }} QRL
+                </div>
+                
+                <h5>Your Address</h5>
+                <div class="address-display mb-2">{{ address }}</div>
+                <div class="mb-3">
+                    {% if address %}
+                        <a href="{{ url_for('address_details', address=address) }}" class="btn btn-sm btn-outline-primary">
+                            View in Explorer
+                        </a>
+                    {% else %}
+                        <button class="btn btn-sm btn-outline-secondary" disabled>Address unavailable</button>
+                    {% endif %}
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="#send-modal" class="btn btn-primary" data-bs-toggle="modal">Send QRL</a>
+                    <a href="#receive-modal" class="btn btn-success" data-bs-toggle="modal">Receive QRL</a>
+                    <button id="mine-button" class="btn btn-warning">Mine Block</button>
+                    <a href="{{ url_for('buy') }}" class="btn btn-outline-success">Buy QRL</a>
+                    <a href="{{ url_for('explorer') }}" class="btn btn-secondary">Block Explorer</a>
+                    {% if address %}
+                        <a href="{{ url_for('address_details', address=address) }}" class="btn btn-outline-primary">View Address</a>
+                    {% else %}
+                        <button class="btn btn-outline-secondary" disabled>Address unavailable</button>
+                    {% endif %}
+                </div>
+                <div class="mt-3">
+                    <div class="row g-2">
+                        <div class="col-sm-6">
+                            <div class="p-3 border rounded bg-light h-100">
+                                <div class="text-muted small">Sent</div>
+                                <strong>{{ sent_count }}</strong>
+                                {% if pending_sent_count %}
+                                    <span class="badge bg-warning ms-2">{{ pending_sent_count }} pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-3 border rounded bg-light h-100">
+                                <div class="text-muted small">Received</div>
+                                <strong>{{ received_count }}</strong>
+                                {% if pending_received_count %}
+                                    <span class="badge bg-info ms-2">{{ pending_received_count }} pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if recent_activity %}
+                <div class="mt-3">
+                    <h5 class="heading-small">Recent Activity</h5>
+                    <ul class="list-group list-group-flush">
+                        {% for item in recent_activity %}
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-semibold">
+                                    {% if item.type == 'sent' %}Sent{% else %}Received{% endif %}
+                                    {{ "%.6f"|format(item.amount) }} QRL
+                                </div>
+                                <div class="text-muted small">
+                                    with {{ item.counterparty[:16] }}...
+                                    · {{ item.timestamp|datetime if item.timestamp else 'Pending' }}
+                                </div>
+                                <div class="small">
+                                    <a href="{{ url_for('transaction_details', tx_hash=item.tx_hash) }}">View transaction</a>
+                                </div>
+                            </div>
+                            <span class="badge {% if item.status == 'pending' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                {% if item.status == 'pending' %}Pending{% else %}{{ item.confirmations }} conf{% endif %}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                <div id="mining-status" class="mt-3 d-none">
+                    <div class="spinner-border spinner-border-sm text-warning" role="status">
+                        <span class="visually-hidden">Mining...</span>
+                    </div>
+                    <span id="mining-message" class="ms-2">Mining block, please wait...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="wallet-card p-4">
+                <h3>Blockchain Info</h3>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Chain Length
+                        <span class="badge bg-primary rounded-pill">{{ blockchain_info['chain_length'] }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Difficulty
+                        <span class="badge bg-primary rounded-pill">{{ blockchain_info['difficulty'] }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Mining Reward
+                        <span class="badge bg-primary rounded-pill">{{ blockchain_info['mining_reward'] }} QRL</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Next Halving
+                        <span class="badge bg-info rounded-pill">Block {{ ((blockchain_info['chain_length'] - 1) // blockchain_info['halving_interval'] + 1) * blockchain_info['halving_interval'] }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Blocks Until Halving
+                        <span class="badge bg-warning rounded-pill">{{ ((blockchain_info['chain_length'] - 1) // blockchain_info['halving_interval'] + 1) * blockchain_info['halving_interval'] - (blockchain_info['chain_length'] - 1) }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Pending Transactions
+                        <span class="badge bg-primary rounded-pill">{{ blockchain_info['pending_transactions'] }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Chain Valid
+                            {% if blockchain_info['is_valid'] %}Yes{% else %}No{% endif %}
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Authenticated Modals -->
+    <div class="modal fade" id="send-modal" tabindex="-1" aria-labelledby="sendModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sendModalLabel">Send QRL</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="send-form" action="{{ url_for('send') }}" method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="mb-3">
+                            <label for="recipient" class="form-label">Recipient Address</label>
+                            {{ form.recipient(class_='form-control', id='recipient', required=True) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount (QRL)</label>
+                            {{ form.amount(class_='form-control', id='amount', step='0.000001', required=True) }}
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="receive-modal" tabindex="-1" aria-labelledby="receiveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="receiveModalLabel">Receive QRL</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-3">Scan this QR code to receive QRL</p>
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="img-fluid qr-code mb-3">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" value="{{ address }}" id="address-copy" readonly>
+                        <button class="btn btn-outline-secondary" type="button" id="copy-address-btn">
+                            <i class="bi bi-clipboard"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<script nonce="{{ csp_nonce }}">
+    // Derive current wallet address from DOM to avoid embedding template variables in JS
+    function getMyAddressFromDOM() {
+        const el = document.querySelector('.address-display');
+        return el ? el.textContent.trim() : '';
+    }
+    const myAddress = getMyAddressFromDOM();
+
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+    const csrfToken = getCookie('XSRF-TOKEN');
+    // Copy address to clipboard
+    document.addEventListener('DOMContentLoaded', function() {
+        const metricCanvas = document.getElementById('blockMetricChart');
+        if (metricCanvas && window.Chart) {
+            const labels = metricCanvas.dataset.chartLabels ? JSON.parse(metricCanvas.dataset.chartLabels) : [];
+            const rewards = metricCanvas.dataset.chartRewards ? JSON.parse(metricCanvas.dataset.chartRewards) : [];
+            const supply = metricCanvas.dataset.chartSupply ? JSON.parse(metricCanvas.dataset.chartSupply) : [];
+
+            new Chart(metricCanvas, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Block Reward (QRL)',
+                            data: rewards,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13,110,253,0.15)',
+                            tension: 0.35,
+                            pointRadius: 2,
+                            yAxisID: 'yReward'
+                        },
+                        {
+                            label: 'Cumulative Supply (QRL)',
+                            data: supply,
+                            borderColor: '#6610f2',
+                            backgroundColor: 'rgba(102,16,242,0.12)',
+                            tension: 0.25,
+                            pointRadius: 0,
+                            yAxisID: 'ySupply'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const value = ctx.parsed.y ?? 0;
+                                    return `${ctx.dataset.label}: ${value.toFixed(8)} QRL`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { font: { size: 10 } }
+                        },
+                        yReward: {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                font: { size: 10 },
+                                callback: (value) => Number(value).toFixed(6)
+                            },
+                            title: {
+                                display: true,
+                                text: 'Reward',
+                                font: { size: 11 }
+                            }
+                        },
+                        ySupply: {
+                            type: 'linear',
+                            position: 'right',
+                            grid: { drawOnChartArea: false },
+                            ticks: {
+                                font: { size: 10 },
+                                callback: (value) => Number(value).toFixed(2)
+                            },
+                            title: {
+                                display: true,
+                                text: 'Supply',
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        const copyButton = document.getElementById('copy-address-btn');
+        if (copyButton) {
+            copyButton.addEventListener('click', function() {
+                const addressInput = document.getElementById('address-copy');
+                addressInput.select();
+                document.execCommand('copy');
+                
+                // Change button text temporarily
+                const button = this;
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i> Copied!';
+                
+                setTimeout(function() {
+                    button.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+        const mineButton = document.getElementById('mine-button');
+        const miningStatus = document.getElementById('mining-status');
+        const miningMessage = document.getElementById('mining-message');
+        if (mineButton && miningStatus && miningMessage) {
+            mineButton.addEventListener('click', async function() {
+                // Disable button and show loading state
+                mineButton.disabled = true;
+                miningStatus.style.display = 'block';
+                miningMessage.textContent = 'Mining block, please wait...';
+                
+                try {
+                    // Call the mine endpoint
+                    const response = await fetch('/mine', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrfToken || ''
+                        },
+                        credentials: 'same-origin'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        // Success - show success message
+                        const blockUrl = `/explorer/block/${encodeURIComponent(result.block_hash)}`;
+                        const addrUrl = myAddress ? `/explorer/address/${encodeURIComponent(myAddress)}` : '/explorer';
+                        miningMessage.innerHTML = `
+                            Successfully mined block #${result.block_height}!
+                            <br>Reward: ${result.mining_reward} QRL
+                            <br>Transactions: ${result.transactions}
+                            <br>Difficulty: ${result.difficulty}
+                            <br><br>
+                            <a class="btn btn-sm btn-outline-primary me-2" href="${blockUrl}">View Block</a>
+                            <a class="btn btn-sm btn-outline-success" href="${addrUrl}">View Your Address</a>
+                        `;
+                        
+                        // Reload the page after a short delay to show updated balance
+                        setTimeout(() => window.location.reload(), 3000);
+                    } else {
+                        // Show error message
+                        miningMessage.textContent = result.error || 'Error mining block';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    miningMessage.textContent = 'Error connecting to server';
+                } finally {
+                    // Re-enable button after a short delay
+                    setTimeout(() => {
+                        mineButton.disabled = false;
+                        // Hide status after 5 seconds
+                        setTimeout(() => {
+                            miningStatus.style.display = 'none';
+                        }, 5000);
+                    }, 1000);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
