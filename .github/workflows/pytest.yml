@@ -28,6 +28,7 @@ jobs:
           grep -v '^pyqrllib' requirements.txt > /tmp/ci-requirements.txt
           python -m pip install -r /tmp/ci-requirements.txt
           python -m pip install pytest
+          python -m pip install -e . --no-deps
 
       - name: Run pytest suite
         env:

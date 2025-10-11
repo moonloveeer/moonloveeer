@@ -7,7 +7,7 @@ import base64
 import json
 import logging
 from collections import defaultdict, deque
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 from time import time
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, make_response, g
 from flask_cors import CORS  # Add this import
@@ -912,7 +912,7 @@ def send():
             # Note: Transaction.is_valid() only requires a non-empty signature at present
             fee = 0.01  # Flat fee to satisfy mempool min fee/byte
             tx = Transaction(sender=sender_address, recipient=recipient, amount=float(amount), fee=fee,
-                             signature=f"web3:{datetime.now(UTC).isoformat()}")
+                             signature=f"web3:{datetime.now(timezone.utc).isoformat()}")
 
             added = node_service.mempool.add_transaction(tx)
             if not added:
