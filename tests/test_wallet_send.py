@@ -1,5 +1,6 @@
 import importlib
 import sys
+from datetime import datetime
 
 import pytest
 
@@ -43,10 +44,20 @@ def _prepare_user(wallet_module, address=SENDER_ADDRESS, balance=1_000.0):
     return user
 
 
+class RecordingDateTime(datetime):
+    last_tz = None
+
+    @classmethod
+    def now(cls, tz=None):
+        cls.last_tz = tz
+        return super().now(tz)
+
+
 def test_send_auto_mine_enabled(tmp_path, monkeypatch):
     wallet_module = _load_wallet_module(monkeypatch, tmp_path, "true")
     client = wallet_module.app.test_client()
 
+    monkeypatch.setattr(wallet_module, "datetime", RecordingDateTime)
     user = _prepare_user(wallet_module)
     token = wallet_module.create_jwt_token(user)
     client.set_cookie("auth_token", token, domain="localhost")
@@ -61,12 +72,14 @@ def test_send_auto_mine_enabled(tmp_path, monkeypatch):
     assert len(wallet_module.node_service.blockchain.chain) == 2
     assert wallet_module.node_service.mempool.get_pending_transactions() == []
     assert wallet_module.node_service.get_balance(RECIPIENT_ADDRESS) == pytest.approx(50.0, rel=1e-6)
+    assert RecordingDateTime.last_tz is wallet_module.timezone.utc
 
 
 def test_send_auto_mine_disabled(tmp_path, monkeypatch):
     wallet_module = _load_wallet_module(monkeypatch, tmp_path, "false")
     client = wallet_module.app.test_client()
 
+    monkeypatch.setattr(wallet_module, "datetime", RecordingDateTime)
     user = _prepare_user(wallet_module)
     token = wallet_module.create_jwt_token(user)
     client.set_cookie("auth_token", token, domain="localhost")
@@ -83,6 +96,7 @@ def test_send_auto_mine_disabled(tmp_path, monkeypatch):
     assert len(pending) == 1
     assert pending[0].recipient == RECIPIENT_ADDRESS
     assert wallet_module.node_service.get_balance(RECIPIENT_ADDRESS) == pytest.approx(0.0, abs=1e-9)
+    assert RecordingDateTime.last_tz is wallet_module.timezone.utc
 
 
 def test_node_service_mine_block_processes_pending(tmp_path):
@@ -109,3 +123,5 @@ def test_node_service_mine_block_processes_pending(tmp_path):
     assert node_service.mempool.get_pending_transactions() == []
     assert node_service.get_balance(tx.recipient) == pytest.approx(75.0, rel=1e-6)
     assert node_service.get_balance(miner_address) > 0
+
+
