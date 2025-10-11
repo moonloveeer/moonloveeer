@@ -102,13 +102,27 @@ def inject_security_context():
 def assign_security_nonce():
     g.csp_nonce = secrets.token_urlsafe(16)
 
+
+def is_secure_request() -> bool:
+    """Detect if the current request should be treated as secure (HTTPS)."""
+    if request.is_secure:
+        return True
+    forwarded_proto = (request.headers.get('X-Forwarded-Proto') or '').lower()
+    if forwarded_proto.startswith('https'):
+        return True
+    forwarded_ssl = (request.headers.get('X-Forwarded-Ssl') or '').lower()
+    if forwarded_ssl == 'on':
+        return True
+    return False
+
+
 @app.after_request
 def apply_security_headers(response):
     csrf_token = generate_csrf()
     response.set_cookie(
         'XSRF-TOKEN',
         csrf_token,
-        secure=request.is_secure,
+        secure=is_secure_request(),
         samesite='Strict',
         httponly=False,
         path='/'
@@ -640,7 +654,7 @@ def web3_verify():
             key='auth_token',
             value=token,
             httponly=True,
-            secure=request.is_secure,
+            secure=is_secure_request(),
             samesite='Lax',
             expires=expires,
             path='/',
@@ -729,7 +743,7 @@ def web3_verify_callback():
             key='auth_token',
             value=token,
             httponly=True,
-            secure=request.is_secure,
+            secure=is_secure_request(),
             samesite='Lax',
             expires=expires,
             path='/'
@@ -777,7 +791,7 @@ def register():
 @app.route('/logout')
 def logout():
     response = make_response(redirect(url_for('index')))
-    response.delete_cookie('auth_token')
+    response.delete_cookie('auth_token', path='/', secure=is_secure_request(), samesite='Lax')
     session.clear()
     flash('You have been logged out.', 'info')
     return response

@@ -66,7 +66,8 @@ Add the regression suites to your pipeline so they run on every push:
 - **Start server**: `python run_web_wallet.py` with the virtualenv activated.
 - **Verify overview auto-refresh**: Observe the "Last updated" text and confirm it changes after 30 seconds or when clicking **Refresh**.
 - **Load more blocks**: Use the **Load more** button in the Recent Blocks card and ensure additional rows render without layout issues.
-- **Load more transactions**: Click **Load more** in the Transactions tab and confirm pending entries and confirmation badges update correctly.
+- **Toggle pending filter**: Use the **Include pending / Confirmed only** toggle above the Transactions table to ensure the badge column reflects the selected view while pagination still works.
+- **Load more transactions**: Click **Load more** in the Transactions tab and confirm pending entries and confirmation badges update correctly under both toggle states.
 - **API parity**: Compare on-page data with `curl "http://127.0.0.1:5001/api/blocks?count=5"` and `curl "http://127.0.0.1:5001/api/transactions?limit=10&pending=true"`.
 - **Return navigation**: Confirm explorer links (`View`, `Details`, `Back to Wallet`) navigate as expected.
 
@@ -146,6 +147,13 @@ Blockchain data and wallet information are stored in the `~/.qrl/` directory by 
 - This is a simplified implementation for educational purposes
 - The XMSS implementation provides quantum resistance but should be reviewed for production use
 - Private keys are stored in plain JSON files - a production system would need more secure storage
+- Cookie security honours reverse-proxy headers via `is_secure_request()` in `qrl/web_wallet.py`, so remember to set `X-Forwarded-Proto: https` when deploying behind TLS.
+
+## pyqrllib Reintegration Plan
+
+- **Short term**: Continue skipping `pyqrllib` in CI while documenting the requirement in workflow comments and packaging instructions.
+- **Patch fork**: Apply the `<cstdint>` fix from upstream issues and publish a patched wheel (e.g. `pyqrllib==2.1.0.post1`) to an internal index so GitHub Actions can install it.
+- **Verification**: Re-enable the package in `requirements.txt` and CI once the wheel builds on Python 3.10+, and add regression tests covering XMSS signing to confirm compatibility.
 
 ## License
 
