@@ -204,7 +204,7 @@ class User:
         self.password_hash = password_hash
         self.wallet_address = wallet_address
         self.is_web3 = is_web3
-        self.created_at = datetime.now(UTC)
+        self.created_at = datetime.now(timezone.utc)
         self.last_login = None
         
     def set_password(self, password):
@@ -221,7 +221,7 @@ class User:
             return False
 
 def create_jwt_token(user):
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     payload = {
         'username': user.username,
         'wallet_address': user.wallet_address,
@@ -615,7 +615,7 @@ def web3_verify():
                 logger.info("Seeded %.6f QRL to new user %s", SEED_BALANCE_QRL, wallet_address)
         
         user = users_db[username]
-        user.last_login = datetime.now(UTC)
+        user.last_login = datetime.now(timezone.utc)
         
         # Create JWT token
         token = create_jwt_token(user)
@@ -633,7 +633,7 @@ def web3_verify():
         
         # Create response with HTTP-only cookie
         response = make_response(jsonify(response_data))
-        expires = datetime.now(UTC) + JWT_EXPIRATION_DELTA
+        expires = datetime.now(timezone.utc) + JWT_EXPIRATION_DELTA
 
         # Set the auth token cookie
         response.set_cookie(
@@ -719,12 +719,12 @@ def web3_verify_callback():
                 logger.info("Seeded %.6f QRL to new user %s", SEED_BALANCE_QRL, wallet_address)
 
         user = users_db[username]
-        user.last_login = datetime.utcnow()
+        user.last_login = datetime.now(timezone.utc)
 
         # JWT and redirect response
         token = create_jwt_token(user)
         resp = make_response(redirect(url_for('index')))
-        expires = datetime.utcnow() + JWT_EXPIRATION_DELTA
+        expires = datetime.now(timezone.utc) + JWT_EXPIRATION_DELTA
         resp.set_cookie(
             key='auth_token',
             value=token,
