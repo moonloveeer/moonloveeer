@@ -59,7 +59,15 @@ Add the regression suites to your pipeline so they run on every push:
 
 ```
 /Users/rain/Desktop/QRL/venv/bin/python -m pytest tests/test_wallet_send.py tests/test_api_endpoints.py
+venv/bin/python -m pytest tests/test_xmss_pyqrllib.py
 ```
+
+### Rebuilding the vendored pyqrllib wheel
+
+- **Clean & build**: `scripts/build_pyqrllib.sh` bundles the existing `vendor/qrllib/` sources into a wheel. The script wipes `build/`, `dist/`, and `pyqrllib.egg-info/`, sets `PYQRLLIB_VERSION_OVERRIDE` (default `1.2.4.post1`), and runs `python setup.py bdist_wheel -v` inside `vendor/qrllib/`.
+- **Requirements**: Use the project virtualenv (`venv/`), or override `PYTHON_BIN`/`PIP_BIN` to point at another interpreter. Ensure submodules are initialized before building.
+- **Custom versions**: Export `PYQRLLIB_VERSION=<version>` to stamp the resulting filename. Set `PYQRLLIB_INSTALL=1` to reinstall the freshly produced wheel automatically.
+- **CI alignment**: The GitHub workflow installs `./vendor/qrllib` directly, so commit the updated wheel under `vendor/qrllib/dist/` whenever you rebuild it.
 
 ### Explorer Manual QA Checklist
 
