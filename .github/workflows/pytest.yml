@@ -16,11 +16,6 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Initialize submodules
-        run: git submodule update --init --recursive
 
       - name: Set up Python
         uses: actions/setup-python@v5
