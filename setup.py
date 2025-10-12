@@ -24,7 +24,6 @@ setup(
         'pyopenssl>=17.5.0',
         'six>=1.11.0',
         'statistics>=1.0.3.5',
-        'tx>=18.7.0',
         'twisted>=18.7.0',
         'service_identity>=17.0.0',
     ],

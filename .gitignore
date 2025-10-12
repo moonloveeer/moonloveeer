@@ -1,0 +1,29 @@
+# Virtual environments
+venv/
+venv-py311/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# OS/editor artifacts
+.DS_Store
+.env
+*.swp
+
+# Build outputs and vendor artifacts
+qrl.egg-info/
+pyqrllib-1.2.4/
+qrllib-master.zip
+vendor/qrllib/build/
+vendor/qrllib/dist/
+vendor/qrllib/pyqrllib.egg-info/
+
+# Runtime data
+.qrl_test/
+.web_wallet_data/
+cookies.txt
+
+# Misc stray files
+"eval "$(ssh-agent -s)""
+"eval "$(ssh-agent -s)".pub"
