@@ -25,8 +25,15 @@ jobs:
       - name: Install build toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake libssl-dev libgmp-dev libboost-all-dev swig rustc cargo pkg-config python3-dev
+          sudo apt-get install -y --no-install-recommends build-essential cmake libssl-dev libgmp-dev libboost-all-dev swig rustc cargo pkg-config python3-dev
+      - name: Cache pyqrllib wheel
+        id: cache-wheel
+        uses: actions/cache@v4
+        with:
+          path: wheelhouse/
+          key: pyqrllib-wheel-${{ runner.os }}-py312-v1-1.2.4
       - name: Build pyqrllib wheel
+        if: steps.cache-wheel.outputs.cache-hit != 'true'
         env:
           CMAKE_GENERATOR: Ninja
           CXXFLAGS: -include stdint.h
@@ -62,7 +69,7 @@ jobs:
       - name: Install runtime system libs
         run: |
           sudo apt-get update
-          sudo apt-get install -y libssl-dev libgmp-dev
+          sudo apt-get install -y --no-install-recommends libssl-dev libgmp-dev
       - uses: actions/download-artifact@v4
         with:
           name: pyqrllib-wheel
