@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: nightly-wheel-${{ matrix.python }}
-  cancel-in-progress: false
+  group: nightly-wheel-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   prebuild-wheel:
