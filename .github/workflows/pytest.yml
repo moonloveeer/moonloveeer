@@ -11,18 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { submodules: false }
-      - name: Build pyqrllib wheel from PyPI (manylinux2014 cp310)
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - name: Install build toolchain
         run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libssl-dev libgmp-dev libboost-all-dev swig rustc cargo pkg-config python3-dev
+      - name: Build pyqrllib wheel (Ubuntu host cp310)
+        run: |
+          python -m pip install --upgrade pip wheel setuptools cmake ninja
           mkdir -p wheelhouse
-          docker run --rm \
-            -v "${{ github.workspace }}/wheelhouse:/wheelhouse" \
-            quay.io/pypa/manylinux2014_x86_64 bash -lc '
-              set -euo pipefail
-              curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-              export PATH="$HOME/.cargo/bin:$PATH"
-              /opt/python/cp310-cp310/bin/python -m pip install --upgrade pip cmake ninja wheel setuptools
-              /opt/python/cp310-cp310/bin/python -m pip wheel -w /wheelhouse "pyqrllib==1.2.4"
-            '
+          python -m pip wheel -w wheelhouse "pyqrllib==1.2.4"
       - uses: actions/upload-artifact@v4
         with:
           name: pyqrllib-wheel
