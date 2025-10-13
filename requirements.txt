@@ -1,5 +1,4 @@
 pycryptodomex>=3.6.6
-pyqrllib>=1.2.0
 ## Native mining libs (x86 only)
 # pyqryptonight>=0.10.26
 # pyqrandomx>=0.2.0
