@@ -23,6 +23,7 @@ jobs:
           CMAKE_GENERATOR: Ninja
           CMAKE_ARGS: -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_PYTHON=ON -DBUILD_TESTS=OFF
           VERBOSE: "1"
+          CXXFLAGS: -include stdint.h
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip wheel setuptools cmake ninja
