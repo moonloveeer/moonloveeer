@@ -1,0 +1,21 @@
+# Distributed under the MIT software license, see the accompanying
+# file LICENSE or http://www.opensource.org/licenses/mit-license.php.\
+[package]
+name = "qrllib"
+version = "0.1.0"
+edition = "2021"
+authors = ["Liam Arzola <liam0215@gmail.edu>"]
+
+[lib]
+name = "qrllib"
+path = "src/lib.rs"
+
+[dependencies]
+pqcrypto-kyber = "0.7.3"
+pqcrypto-dilithium = "0.4.4"
+pqcrypto-traits = "0.3.4"
+sha2 = "0.10.0"
+hex = "0.4.3"
+rayon = "1.5.1"
+crossbeam-channel = "0.5.4"
+rand = { version = "0.8.5", features = ["getrandom"] }

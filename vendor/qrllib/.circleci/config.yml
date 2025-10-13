@@ -1,0 +1,182 @@
+version: 2.1
+orbs: 
+  rust: circleci/rust@1.6.0
+jobs:
+  build:
+    docker:
+      - image: qrledger/qrl-docker:xenial
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: cmake -DBUILD_PYTHON=ON -DCMAKE_C_COMPILER=gcc-5 -DCMAKE_CXX_COMPILER=g++-5
+      - run: make
+      - run: export GTEST_COLOR=1 && ctest -VV
+
+  test_rust:
+      docker:
+        - image: qrledger/qrl-docker-ci:bionic
+      steps:
+        - checkout
+        - run: apt update
+        - run: apt remove --purge --auto-remove cmake
+        - run: apt install build-essential libssl-dev
+        - run: wget https://github.com/Kitware/CMake/releases/download/v3.20.2/cmake-3.20.2.tar.gz
+        - run: tar -zxvf cmake-3.20.2.tar.gz
+        - run: cd cmake-3.20.2 && ./bootstrap
+        - run: cd cmake-3.20.2 && make
+        - run: cd cmake-3.20.2 && make install
+        - run: curl https://sh.rustup.rs -sSf | bash -s -- -y
+        - run: source $HOME/.cargo/env
+        - run: apt install llvm-dev libclang-dev clang -y
+        - run: cmake --version
+        - run: $HOME/.cargo/bin/cargo build -vv
+        - run: $HOME/.cargo/bin/cargo test
+
+  test_python:
+    docker:
+      - image: qrledger/qrl-docker-ci:xenial
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: python3 setup.py test
+
+  test_golang:
+    docker:
+      - image: qrledger/qrl-docker-ci:bionic
+    steps:
+      - checkout
+      - run: add-apt-repository ppa:ubuntu-toolchain-r/test
+      - run: apt update
+      - run: apt install g++-7 -y
+      - run: update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+      - run: git submodule update --init --recursive
+
+      - run: cd / && curl -O https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz && tar zxvf go1.8.linux-amd64.tar.gz
+      - run:
+          name: Setting up Environment Variables for Golang
+          command: |
+            echo 'export GOROOT="/go"' >> $BASH_ENV
+            echo 'export PATH="$PATH:/go/bin/"' >> $BASH_ENV
+
+      - run: go get github.com/magiconair/properties/assert
+      - run: mkdir -p ~/go/src/github.com/theQRL/qrllib/
+      - run: cp -r . ~/go/src/github.com/theQRL/qrllib/
+      - run: cd ~/go/src/github.com/theQRL/qrllib/ && cmake -DBUILD_GO=ON
+      - run: cd ~/go/src/github.com/theQRL/qrllib/ && make
+      - run: cd ~/go/src/github.com/theQRL/qrllib/tests/golang/tests/ && go test -v
+
+  build_emscripten:
+    docker:
+      - image: zondax/qrl-build-images:emscripten
+    environment:
+      BASH_ENV: ".circleci/bash_env.sh"
+    steps:
+      - checkout
+      - run:
+          name: Update submodules
+          command: git submodule update --init --recursive
+
+      - run:
+          name: Build webassembly
+          command: ./.circleci/build_emscripten.sh
+
+      - run:
+          name: Install latest node/npm
+          command: ./.circleci/install_node.sh
+
+      - run:
+          name: run the tests
+          command: cd tests/js && npm install && npm test
+
+  deploy_pypi:
+    docker:
+      - image: qrledger/qrl-docker-ci:xenial
+    steps:
+      - checkout
+      - run: git submodule update --init --recursive
+      - run: python3 setup.py build sdist
+      - run: pip install twine
+      - run: twine upload -u $PYPI_USERNAME -p $PYPI_PASSWORD dist/*
+
+  deploy_npm:
+    docker:
+      - image: zondax/qrl-build-images:emscripten
+    environment:
+      BASH_ENV: ".circleci/bash_env.sh"
+    steps:
+      - checkout
+      - run:
+          name: Update submodules
+          command: git submodule update --init --recursive
+
+        # Building again and avoiding complex workspaces until they are supported in the CLI
+      - run:
+          name: Build webassembly
+          command: ./.circleci/build_emscripten.sh
+
+      - run:
+          name: Install latest node/npm
+          command: ./.circleci/install_node.sh
+
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > /root/project/.npmrc
+
+      - run:
+          name: Update tag
+          command: npm --no-git-tag-version version $CIRCLE_TAG
+
+      - run:
+          name: Publish package
+          command: npm publish
+
+workflows:
+  version: 2
+  build_all:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+
+      - test_rust:
+          filters:
+            tags:
+              only: /.*/
+
+      - test_python:
+          filters:
+            tags:
+              only: /.*/
+
+      - test_golang:
+          filters:
+            tags:
+              only: /.*/
+
+      - build_emscripten:
+          filters:
+            tags:
+              only: /.*/
+
+      - deploy_pypi:
+          requires:
+            - build
+            - test_python
+            - build_emscripten
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*/
+
+      - deploy_npm:
+          requires:
+            - build
+            - test_python
+            - build_emscripten
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v[0-9]+(\.[0-9]+)*/
