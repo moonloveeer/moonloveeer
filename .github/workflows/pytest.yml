@@ -13,29 +13,22 @@ jobs:
         with: { submodules: false }
       - name: Set up Python
         uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+        with:
+          python-version: '3.12'
+          cache: 'pip'
       - name: Install build toolchain
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential cmake libssl-dev libgmp-dev libboost-all-dev swig rustc cargo pkg-config python3-dev
-      - name: Build pyqrllib wheel (Ubuntu host cp310, verbose)
+      - name: Build pyqrllib wheel
         env:
           CMAKE_GENERATOR: Ninja
-          CMAKE_ARGS: -DCMAKE_VERBOSE_MAKEFILE=ON -DBUILD_PYTHON=ON -DBUILD_TESTS=OFF
-          VERBOSE: "1"
           CXXFLAGS: -include stdint.h
-          Python_EXECUTABLE: ${{ env.pythonLocation }}/bin/python
         run: |
           set -euo pipefail
           python -m pip install --upgrade pip wheel setuptools cmake ninja
           mkdir -p wheelhouse
-          python -m pip wheel -v -w wheelhouse "pyqrllib==1.2.4" 2>&1 | tee wheelhouse/pyqrllib-build.log
-      - name: Upload build logs (always)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pyqrllib-build-logs
-          path: wheelhouse/pyqrllib-build.log
+          python -m pip wheel -w wheelhouse "pyqrllib==1.2.4"
       - uses: actions/upload-artifact@v4
         with:
           name: pyqrllib-wheel
@@ -49,7 +42,9 @@ jobs:
       - uses: actions/checkout@v4
         with: { submodules: false }
       - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+        with:
+          python-version: '3.12'
+          cache: 'pip'
       - name: Install runtime system libs
         run: |
           sudo apt-get update
