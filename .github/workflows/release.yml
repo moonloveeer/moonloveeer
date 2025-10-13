@@ -23,15 +23,24 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
           cache-dependency-path: 'requirements.txt'
+      - name: Install build toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential cmake libssl-dev libgmp-dev libboost-all-dev swig rustc cargo pkg-config python3-dev
       - name: Build lockfile and SBOM
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pip-tools cyclonedx-bom
+          python -m pip install pip-tools cyclonedx-bom wheel setuptools cmake ninja
           pip-compile --generate-hashes -o requirements.lock requirements.txt
           cyclonedx-bom -o sbom.json -p pip -i requirements.lock
+      - name: Build pyqrllib wheel
+        run: |
+          mkdir -p wheelhouse
+          python -m pip wheel -w wheelhouse "pyqrllib==1.2.4"
       - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
             requirements.lock
             sbom.json
+            wheelhouse/pyqrllib-*.whl

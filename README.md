@@ -1,5 +1,7 @@
 # QRL - Quantum Resistant Ledger
 
+[![codecov](https://codecov.io/gh/moonloveeer/moonloveeer/branch/main/graph/badge.svg)](https://codecov.io/gh/moonloveeer/moonloveeer) [![Docs](https://img.shields.io/badge/docs-latest-blue.svg)](https://moonloveeer.github.io/moonloveeer/)
+
 A Layer-1 blockchain implementation with quantum-safe signatures (XMSS) and Proof-of-Work consensus.
 
 ## Features
@@ -162,6 +164,15 @@ Blockchain data and wallet information are stored in the `~/.qrl/` directory by 
 - **Short term**: Continue skipping `pyqrllib` in CI while documenting the requirement in workflow comments and packaging instructions.
 - **Patch fork**: Apply the `<cstdint>` fix from upstream issues and publish a patched wheel (e.g. `pyqrllib==2.1.0.post1`) to an internal index so GitHub Actions can install it.
 - **Verification**: Re-enable the package in `requirements.txt` and CI once the wheel builds on Python 3.10+, and add regression tests covering XMSS signing to confirm compatibility.
+
+## Web Wallet
+
+- Start the wallet: `python run_web_wallet.py`
+- Port selection:
+  - Default: `5001`
+  - Override via env: `PORT=5050 python run_web_wallet.py`
+  - Override via CLI: `python run_web_wallet.py --port 5050`
+  - If the chosen port is in use, the script will scan the next 20 ports and bind to the first available.
 
 ## License
 
