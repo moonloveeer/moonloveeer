@@ -6,38 +6,54 @@ on:
   pull_request:
 
 jobs:
-  tests:
-    runs-on: macos-14
+  build-pyqrllib-wheel:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: false
-
-      - name: Install brew build toolchain
+      - uses: actions/checkout@v4
+        with: { submodules: false }
+      - name: Build pyqrllib wheel from PyPI (manylinux2014 cp310)
         run: |
-          brew update
-          brew install cmake openssl@3 gmp boost swig rust pkg-config
-          echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
-          echo "PKG_CONFIG_PATH=$(brew --prefix openssl@3)/lib/pkgconfig:$(brew --prefix gmp)/lib/pkgconfig" >> $GITHUB_ENV
-          echo "CMAKE_OSX_ARCHITECTURES=arm64" >> $GITHUB_ENV
-
-      - name: Set up Python (3.13)
-        uses: actions/setup-python@v5
+          mkdir -p wheelhouse
+          docker run --rm \
+            -v "${{ github.workspace }}/wheelhouse:/wheelhouse" \
+            quay.io/pypa/manylinux2014_x86_64 bash -lc '
+              set -euo pipefail
+              curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+              export PATH="$HOME/.cargo/bin:$PATH"
+              /opt/python/cp310-cp310/bin/python -m pip install --upgrade pip wheel setuptools
+              /opt/python/cp310-cp310/bin/python -m pip wheel -w /wheelhouse "pyqrllib==1.2.4"
+            '
+      - uses: actions/upload-artifact@v4
         with:
-          python-version: '3.13'
+          name: pyqrllib-wheel
+          path: wheelhouse/pyqrllib-*.whl
+          retention-days: 3
 
+  tests:
+    needs: build-pyqrllib-wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - name: Install runtime system libs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libgmp-dev
+      - uses: actions/download-artifact@v4
+        with:
+          name: pyqrllib-wheel
+          path: wheelhouse/
       - name: Install project dependencies
         run: |
           python -m pip install --upgrade pip
-          ls -lah wheels || true
-          python -m pip install wheels/pyqrllib-1.2.4.post1-cp313-cp313-macosx_14_0_arm64.whl
+          python -m pip install wheelhouse/pyqrllib-*.whl
           python -m pip install -r requirements.txt
           python -m pip install pytest
           python -m pip install -e . --no-deps
-
       - name: Run pytest suite
         env:
           PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/qrl
         run: |
-          python -m pytest tests/test_wallet_send.py tests/test_api_endpoints.py
+          python -m pytest -vv -s tests/test_wallet_send.py tests/test_api_endpoints.py
