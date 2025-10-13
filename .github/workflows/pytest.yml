@@ -89,7 +89,7 @@ jobs:
           python -m pip install wheelhouse/pyqrllib-*.whl
           python -m pip install pip-tools cyclonedx-bom
           python -m pip install pytest pytest-cov
-          pip-compile --generate-hashes -o requirements.lock requirements.txt
+          pip-compile --allow-unsafe --generate-hashes -o requirements.lock requirements.txt
           python -m pip install --require-hashes -r requirements.lock
       - name: Run pytest suite
         env:
@@ -142,3 +142,28 @@ jobs:
         run: |
           python -m pip install --upgrade pip pre-commit
           pre-commit run --all-files --show-diff-on-failure
+
+  security-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: false }
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run pip-audit and bandit
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pip-tools pip-audit bandit cyclonedx-bom
+          pip-compile --allow-unsafe -o requirements.lock requirements.txt
+          pip-audit -r requirements.lock -f json -o pip-audit.json || true
+          bandit -q -r qrl -f json -o bandit.json || true
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            pip-audit.json
+            bandit.json

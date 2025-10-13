@@ -174,6 +174,30 @@ Blockchain data and wallet information are stored in the `~/.qrl/` directory by 
   - Override via CLI: `python run_web_wallet.py --port 5050`
   - If the chosen port is in use, the script will scan the next 20 ports and bind to the first available.
 
+## Docker
+
+- Build locally:
+
+```bash
+docker build -t ghcr.io/moonloveeer/moonloveeer:dev .
+```
+
+- Run containerized wallet:
+
+```bash
+docker run --rm -p 5001:5001 -e PORT=5001 ghcr.io/moonloveeer/moonloveeer:dev
+# Open http://localhost:5001
+```
+
+- Pull from GHCR (built by CI on main/tags):
+
+```bash
+docker pull ghcr.io/moonloveeer/moonloveeer:latest
+docker run --rm -p 5001:5001 -e PORT=5001 ghcr.io/moonloveeer/moonloveeer:latest
+```
+
+- Versioned tags are published on release, e.g. `ghcr.io/moonloveeer/moonloveeer:v0.1.1`.
+
 ## License
 
 MIT

@@ -33,6 +33,7 @@ jobs:
           python -m pip install mkdocs
           mkdir -p docs
           cp WHITEPAPER.md docs/WHITEPAPER.md
+          cp README.md docs/README.md
           mkdocs build --strict --site-dir site
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
