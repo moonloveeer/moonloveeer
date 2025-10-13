@@ -19,6 +19,10 @@ from web3 import Web3
 from eth_account.messages import encode_defunct, _hash_eip191_message
 from eth_account import Account
 import secrets
+from markupsafe import Markup
+import markdown
+import re
+import html as html_lib
 
 # Quantum-resistant cryptography
 from argon2 import PasswordHasher
@@ -508,6 +512,26 @@ def index():
                            pending_sent_count=pending_sent_count,
                            pending_received_count=pending_received_count,
                            recent_activity=recent_activity)
+
+@app.route('/whitepaper')
+def whitepaper():
+    try:
+        md_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'WHITEPAPER.md')
+        with open(md_path, 'r', encoding='utf-8') as f:
+            md_text = f.read()
+    except Exception:
+        return make_response("WHITEPAPER.md not found", 404)
+
+    html = markdown.markdown(md_text, extensions=['fenced_code', 'tables', 'toc'])
+    # Convert ```mermaid code fences (rendered as <pre><code class="language-mermaid">)</code></pre>
+    # into <div class="mermaid"> blocks so MermaidJS can render them.
+    html = re.sub(
+        r'<pre><code class="language-mermaid">(.*?)</code></pre>',
+        lambda m: f'<div class="mermaid">{html_lib.unescape(m.group(1))}</div>',
+        html,
+        flags=re.DOTALL,
+    )
+    return render_template('whitepaper.html', content=Markup(html))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

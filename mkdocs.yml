@@ -1,0 +1,12 @@
+site_name: QRL Wallet
+nav:
+  - Home: index.md
+  - Whitepaper: WHITEPAPER.md
+theme:
+  name: mkdocs
+markdown_extensions:
+  - admonition
+  - toc
+  - tables
+  - fenced_code
+  - codehilite

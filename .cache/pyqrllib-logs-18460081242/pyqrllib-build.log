@@ -1,0 +1,451 @@
+Collecting pyqrllib==1.2.4
+  Downloading pyqrllib-1.2.4.tar.gz (284 kB)
+  Preparing metadata (setup.py): started
+  Running command python setup.py egg_info
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/setup.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources  # part of setuptools
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'author-email' in 'metadata' (setup.cfg), please use the underscore name 'author_email' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'author-email' will not be supported in future
+          versions. Please use the underscore name 'author_email' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'home-page' in 'metadata' (setup.cfg), please use the underscore name 'home_page' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'home-page' will not be supported in future
+          versions. Please use the underscore name 'home_page' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'description-file' in 'metadata' (setup.cfg), please use the underscore name 'description_file' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'description-file' will not be supported in future
+          versions. Please use the underscore name 'description_file' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/__init__.py:92: _DeprecatedInstaller: setuptools.installer and fetch_build_eggs are deprecated.
+  !!
+
+          ********************************************************************************
+          Requirements should be satisfied by a PEP 517 installer.
+          If you are using pip, you can try `pip install --use-pep517`.
+
+          By 2025-Oct-31, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+          ********************************************************************************
+
+  !!
+    dist.fetch_build_eggs(dist.setup_requires)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'tests_require'
+    warnings.warn(msg)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'use_pyscaffold'
+    warnings.warn(msg)
+  running egg_info
+  creating /tmp/pip-pip-egg-info-cc_0k1q9/pyqrllib.egg-info
+  writing /tmp/pip-pip-egg-info-cc_0k1q9/pyqrllib.egg-info/PKG-INFO
+  writing dependency_links to /tmp/pip-pip-egg-info-cc_0k1q9/pyqrllib.egg-info/dependency_links.txt
+  writing top-level names to /tmp/pip-pip-egg-info-cc_0k1q9/pyqrllib.egg-info/top_level.txt
+  writing manifest file '/tmp/pip-pip-egg-info-cc_0k1q9/pyqrllib.egg-info/SOURCES.txt'
+  reading manifest file '/tmp/pip-pip-egg-info-cc_0k1q9/pyqrllib.egg-info/SOURCES.txt'
+  reading manifest template 'MANIFEST.in'
+  warning: no files found matching '*.cmake' anywhere in distribution
+  warning: no files found matching '*' under directory 'deps/xmss-alt'
+  adding license file 'LICENSE'
+  writing manifest file '/tmp/pip-pip-egg-info-cc_0k1q9/pyqrllib.egg-info/SOURCES.txt'
+  Preparing metadata (setup.py): finished with status 'done'
+Building wheels for collected packages: pyqrllib
+  DEPRECATION: Building 'pyqrllib' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'pyqrllib'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for pyqrllib (setup.py): started
+  Running command python setup.py bdist_wheel
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/setup.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources  # part of setuptools
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'author-email' in 'metadata' (setup.cfg), please use the underscore name 'author_email' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'author-email' will not be supported in future
+          versions. Please use the underscore name 'author_email' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'home-page' in 'metadata' (setup.cfg), please use the underscore name 'home_page' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'home-page' will not be supported in future
+          versions. Please use the underscore name 'home_page' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'description-file' in 'metadata' (setup.cfg), please use the underscore name 'description_file' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'description-file' will not be supported in future
+          versions. Please use the underscore name 'description_file' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/__init__.py:92: _DeprecatedInstaller: setuptools.installer and fetch_build_eggs are deprecated.
+  !!
+
+          ********************************************************************************
+          Requirements should be satisfied by a PEP 517 installer.
+          If you are using pip, you can try `pip install --use-pep517`.
+
+          By 2025-Oct-31, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+          ********************************************************************************
+
+  !!
+    dist.fetch_build_eggs(dist.setup_requires)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'tests_require'
+    warnings.warn(msg)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'use_pyscaffold'
+    warnings.warn(msg)
+  running bdist_wheel
+  running build
+  running build_py
+  creating build/lib.linux-x86_64-cpython-310/pyqrllib
+  copying pyqrllib/_version.py -> build/lib.linux-x86_64-cpython-310/pyqrllib
+  copying pyqrllib/dilithium.py -> build/lib.linux-x86_64-cpython-310/pyqrllib
+  copying pyqrllib/pyqrllib.py -> build/lib.linux-x86_64-cpython-310/pyqrllib
+  copying pyqrllib/kyber.py -> build/lib.linux-x86_64-cpython-310/pyqrllib
+  copying pyqrllib/__init__.py -> build/lib.linux-x86_64-cpython-310/pyqrllib
+  running build_ext
+  Re-run cmake no build system arguments
+  CMake Deprecation Warning at CMakeLists.txt:4 (cmake_minimum_required):
+    Compatibility with CMake < 3.10 will be removed from a future version of
+    CMake.
+
+    Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+    to tell CMake that the project requires at least <min> but has been updated
+    to work with policies introduced by <max> or earlier.
+
+
+  -- The C compiler identification is GNU 13.3.0
+  -- The CXX compiler identification is GNU 13.3.0
+  -- Detecting C compiler ABI info
+  -- Detecting C compiler ABI info - done
+  -- Check for working C compiler: /usr/bin/cc - skipped
+  -- Detecting C compile features
+  -- Detecting C compile features - done
+  -- Detecting CXX compiler ABI info
+  -- Detecting CXX compiler ABI info - done
+  -- Check for working CXX compiler: /usr/bin/c++ - skipped
+  -- Detecting CXX compile features
+  -- Detecting CXX compile features - done
+  CMake Deprecation Warning at CMakeLists.txt:16 (cmake_policy):
+    The OLD behavior for policy CMP0078 will be removed from a future version
+    of CMake.
+
+    The cmake-policies(7) manual explains that the OLD behaviors of all
+    policies are deprecated and that a policy should be set to OLD only under
+    specific short-term circumstances.  Projects should be ported to the NEW
+    behavior and not rely on setting a policy to OLD.
+
+
+  -- BUILD_TESTS    OFF
+  -- GOLANG WRAPPER OFF
+  -- PYTHON WRAPPER ON
+  -- WEBASSEMBLY    OFF
+  -- Found SWIG: /usr/bin/swig4.0 (found version "4.2.0")
+  -- Found Python: /usr/bin/python3.12 (found version "3.12.3") found components: Interpreter Development Development.Module Development.Embed
+  Python_FOUND:TRUE
+  Python_VERSION:3.12.3
+  Python_Development_FOUND:TRUE
+  Python_LIBRARIES:/usr/lib/x86_64-linux-gnu/libpython3.12.so
+  -- Python wrapper enabled
+  -- CMAKE_SWIG_OUTDIR: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib
+  -- CMAKE_LIBRARY_OUTPUT_DIRECTORY: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib
+  CMake Warning (dev) at /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/share/cmake-4.1/Modules/UseSWIG.cmake:655 (message):
+    Policy CMP0086 is not set: UseSWIG honors SWIG_MODULE_NAME via -module
+    flag.  Run "cmake --help-policy CMP0086" for policy details.  Use the
+    cmake_policy command to set the policy and suppress this warning.
+
+  Call Stack (most recent call first):
+    /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/share/cmake-4.1/Modules/UseSWIG.cmake:926 (SWIG_ADD_SOURCE_TO_MODULE)
+    CMakeLists.txt:304 (SWIG_ADD_LIBRARY)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+  -- CMAKE_SWIG_OUTDIR: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib
+  -- CMAKE_LIBRARY_OUTPUT_DIRECTORY: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib
+  CMake Warning (dev) at /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/share/cmake-4.1/Modules/UseSWIG.cmake:655 (message):
+    Policy CMP0086 is not set: UseSWIG honors SWIG_MODULE_NAME via -module
+    flag.  Run "cmake --help-policy CMP0086" for policy details.  Use the
+    cmake_policy command to set the policy and suppress this warning.
+
+  Call Stack (most recent call first):
+    /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/share/cmake-4.1/Modules/UseSWIG.cmake:926 (SWIG_ADD_SOURCE_TO_MODULE)
+    CMakeLists.txt:364 (SWIG_ADD_LIBRARY)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+  -- CMAKE_SWIG_OUTDIR: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib
+  -- CMAKE_LIBRARY_OUTPUT_DIRECTORY: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib
+  CMake Warning (dev) at /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/share/cmake-4.1/Modules/UseSWIG.cmake:655 (message):
+    Policy CMP0086 is not set: UseSWIG honors SWIG_MODULE_NAME via -module
+    flag.  Run "cmake --help-policy CMP0086" for policy details.  Use the
+    cmake_policy command to set the policy and suppress this warning.
+
+  Call Stack (most recent call first):
+    /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/share/cmake-4.1/Modules/UseSWIG.cmake:926 (SWIG_ADD_SOURCE_TO_MODULE)
+    CMakeLists.txt:410 (SWIG_ADD_LIBRARY)
+  This warning is for project developers.  Use -Wno-dev to suppress it.
+
+  -- Configuring done (2.6s)
+  -- Generating done (0.0s)
+  -- Build files have been written to: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/temp.linux-x86_64-cpython-310
+  Change Dir: '/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/temp.linux-x86_64-cpython-310'
+
+  Run Build Command(s): /opt/hostedtoolcache/Python/3.10.18/x64/bin/ninja -v -j2
+  [1/88] /usr/bin/c++  -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/shasha -I/usr/include/python3.12 -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/xmss-alt -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/dilithium -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -O3 -Wno-deprecated -std=gnu++14 -MD -MT CMakeFiles/shasha.dir/src/shasha/shasha.cpp.o -MF CMakeFiles/shasha.dir/src/shasha/shasha.cpp.o.d -o CMakeFiles/shasha.dir/src/shasha/shasha.cpp.o -c /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/shasha/shasha.cpp
+  [2/88] cd /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/temp.linux-x86_64-cpython-310 && /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/bin/cmake -E make_directory /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/temp.linux-x86_64-cpython-310/CMakeFiles/_dilithium.dir /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib && /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/bin/cmake -E env SWIG_LIB=/usr/share/swig4.0 /usr/bin/swig4.0 -python -includeall -ignoremissing -outdir /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib -c++ -interface _dilithium -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps -I/usr/include/python3.12 -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/xmss-alt -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/shasha -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/dilithium -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium -o /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib/dilithiumPYTHON_wrap.cxx /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api/dilithium.i
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium/dilithium.h:7: Warning 201: Unable to find 'string'
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium/dilithium.h:8: Warning 201: Unable to find 'vector'
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/dilithium/ref/randombytes.h:6: Warning 201: Unable to find 'unistd.h'
+  [3/88] cd /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/temp.linux-x86_64-cpython-310 && /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/bin/cmake -E make_directory /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/temp.linux-x86_64-cpython-310/CMakeFiles/_kyber.dir /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib && /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/bin/cmake -E env SWIG_LIB=/usr/share/swig4.0 /usr/bin/swig4.0 -python -includeall -ignoremissing -outdir /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib -c++ -interface _kyber -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps -I/usr/include/python3.12 -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/xmss-alt -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/shasha -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/dilithium -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium -o /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/build/lib.linux-x86_64-cpython-310/pyqrllib/kyberPYTHON_wrap.cxx /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api/kyber.i
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/kyber/kyber.h:9: Warning 201: Unable to find 'string'
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/kyber/kyber.h:10: Warning 201: Unable to find 'vector'
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/kyber/ref/api.h:4: Warning 201: Unable to find 'params.h'
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/kyber/ref/randombytes.h:6: Warning 201: Unable to find 'unistd.h'
+  [4/88] /usr/bin/c++  -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/xmss-alt -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/shasha -I/usr/include/python3.12 -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/dilithium -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -O3 -Wno-deprecated -std=gnu++14 -MD -MT CMakeFiles/qrllib.dir/src/qrl/hashing.cpp.o -MF CMakeFiles/qrllib.dir/src/qrl/hashing.cpp.o.d -o CMakeFiles/qrllib.dir/src/qrl/hashing.cpp.o -c /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/hashing.cpp
+  [5/88] /usr/bin/c++  -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/xmss-alt -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/shasha -I/usr/include/python3.12 -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/dilithium -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -O3 -Wno-deprecated -std=gnu++14 -MD -MT CMakeFiles/qrllib.dir/src/qrl/misc.cpp.o -MF CMakeFiles/qrllib.dir/src/qrl/misc.cpp.o.d -o CMakeFiles/qrllib.dir/src/qrl/misc.cpp.o -c /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.cpp
+  FAILED: [code=1] CMakeFiles/qrllib.dir/src/qrl/misc.cpp.o
+  /usr/bin/c++  -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/api -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/xmss-alt -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/shasha -I/usr/include/python3.12 -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/deps/dilithium -I/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/dilithium -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -DVERSION_INFO=\"1.2.4\" -pthread -fPIC -Wno-deprecated-declarations -O3 -Wno-deprecated -std=gnu++14 -MD -MT CMakeFiles/qrllib.dir/src/qrl/misc.cpp.o -MF CMakeFiles/qrllib.dir/src/qrl/misc.cpp.o.d -o CMakeFiles/qrllib.dir/src/qrl/misc.cpp.o -c /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.cpp
+  In file included from /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.cpp:4:
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:14:61: error: ‘uint32_t’ has not been declared
+     14 | std::string bin2hstr(const std::vector<unsigned char> &vec, uint32_t wrap = 0);
+        |                                                             ^~~~~~~~
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:15:46: error: ‘uint32_t’ has not been declared
+     15 | std::string bin2hstr(const std::string &vec, uint32_t wrap = 0);
+        |                                              ^~~~~~~~
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:22:42: error: ‘uint32_t’ was not declared in this scope
+     22 | std::vector<unsigned char> getRandomSeed(uint32_t seed_size, const std::string &entropy);
+        |                                          ^~~~~~~~
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:10:1: note: ‘uint32_t’ is defined in header ‘<cstdint>’; did you forget to ‘#include <cstdint>’?
+      9 | #include <stdexcept>
+    +++ |+#include <cstdint>
+     10 |
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:22:62: error: expected primary-expression before ‘const’
+     22 | std::vector<unsigned char> getRandomSeed(uint32_t seed_size, const std::string &entropy);
+        |                                                              ^~~~~
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:24:98: error: ‘uint32_t’ has not been declared
+     24 | std::vector<std::vector<unsigned char>> getHashChainSeed(const std::vector<unsigned char> &seed, uint32_t seed_shift, uint32_t count);
+        |                                                                                                  ^~~~~~~~
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:24:119: error: ‘uint32_t’ has not been declared
+     24 | std::vector<std::vector<unsigned char>> getHashChainSeed(const std::vector<unsigned char> &seed, uint32_t seed_shift, uint32_t count);
+        |                                                                                                                       ^~~~~~~~
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.cpp:137:88: error: ‘std::vector<unsigned char> getRandomSeed(uint32_t, const std::string&)’ redeclared as different kind of entity
+    137 | std::vector<unsigned char> getRandomSeed(uint32_t seed_size, const std::string &entropy) {
+        |                                                                                        ^
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/src/qrl/misc.h:22:28: note: previous declaration ‘std::vector<unsigned char> getRandomSeed’
+     22 | std::vector<unsigned char> getRandomSeed(uint32_t seed_size, const std::string &entropy);
+        |                            ^~~~~~~~~~~~~
+  [6/88] : && /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/cmake/data/bin/cmake -E rm -f libshasha.a && /usr/bin/ar qc libshasha.a  CMakeFiles/shasha.dir/src/shasha/shasha.cpp.o && /usr/bin/ranlib libshasha.a && :
+  ninja: build stopped: subcommand failed.
+
+  Traceback (most recent call last):
+    File "<string>", line 2, in <module>
+    File "<pip-setuptools-caller>", line 35, in <module>
+    File "/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/setup.py", line 74, in <module>
+      setup_package()
+    File "/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/setup.py", line 64, in setup_package
+      setup(setup_requires=['six', 'pytest-runner', 'pyscaffold>3'] + sphinx + cmake,
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/__init__.py", line 115, in setup
+      return distutils.core.setup(**attrs)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/core.py", line 186, in setup
+      return run_commands(dist)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/core.py", line 202, in run_commands
+      dist.run_commands()
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py", line 1002, in run_commands
+      self.run_command(cmd)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py", line 1102, in run_command
+      super().run_command(command)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py", line 1021, in run_command
+      cmd_obj.run()
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/command/bdist_wheel.py", line 370, in run
+      self.run_command("build")
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/cmd.py", line 357, in run_command
+      self.distribution.run_command(command)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py", line 1102, in run_command
+      super().run_command(command)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py", line 1021, in run_command
+      cmd_obj.run()
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/command/build.py", line 135, in run
+      self.run_command(cmd_name)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/cmd.py", line 357, in run_command
+      self.distribution.run_command(command)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py", line 1102, in run_command
+      super().run_command(command)
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py", line 1021, in run_command
+      cmd_obj.run()
+    File "/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/setup.py", line 43, in run
+      subprocess.check_call(['cmake', '--build', '.',
+    File "/opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/subprocess.py", line 369, in check_call
+      raise CalledProcessError(retcode, cmd)
+  subprocess.CalledProcessError: Command '['cmake', '--build', '.', '--config', 'Release', '--', '-j2']' returned non-zero exit status 1.
+  error: subprocess-exited-with-error
+  
+  × python setup.py bdist_wheel did not run successfully.
+  │ exit code: 1
+  ╰─> See above for output.
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  full command: /opt/hostedtoolcache/Python/3.10.18/x64/bin/python -u -c '
+  exec(compile('"'"''"'"''"'"'
+  # This is <pip-setuptools-caller> -- a caller that pip uses to run setup.py
+  #
+  # - It imports setuptools before invoking setup.py, to enable projects that directly
+  #   import from `distutils.core` to work with newer packaging standards.
+  # - It provides a clear error message when setuptools is not installed.
+  # - It sets `sys.argv[0]` to the underlying `setup.py`, when invoking `setup.py` so
+  #   setuptools doesn'"'"'t think the script is `-c`. This avoids the following warning:
+  #     manifest_maker: standard file '"'"'-c'"'"' not found".
+  # - It generates a shim setup.py, for handling setup.cfg-only projects.
+  import os, sys, tokenize, traceback
+  
+  try:
+      import setuptools
+  except ImportError:
+      print(
+          "ERROR: Can not execute `setup.py` since setuptools failed to import in "
+          "the build environment with exception:",
+          file=sys.stderr,
+      )
+      traceback.print_exc()
+      sys.exit(1)
+  
+  __file__ = %r
+  sys.argv[0] = __file__
+  
+  if os.path.exists(__file__):
+      filename = __file__
+      with tokenize.open(__file__) as f:
+          setup_py_code = f.read()
+  else:
+      filename = "<auto-generated setuptools caller>"
+      setup_py_code = "from setuptools import setup; setup()"
+  
+  exec(compile(setup_py_code, filename, "exec"))
+  '"'"''"'"''"'"' % ('"'"'/tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/setup.py'"'"',), "<pip-setuptools-caller>", "exec"))' bdist_wheel -d /tmp/pip-wheel-bkq3lxxo
+  cwd: /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/
+  Building wheel for pyqrllib (setup.py): finished with status 'error'
+  ERROR: Failed building wheel for pyqrllib
+  Running setup.py clean for pyqrllib
+  Running command python setup.py clean
+  /tmp/pip-wheel-f694l7by/pyqrllib_1fc2a4b5d64943ccb17ffeafe40fe233/setup.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources  # part of setuptools
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'author-email' in 'metadata' (setup.cfg), please use the underscore name 'author_email' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'author-email' will not be supported in future
+          versions. Please use the underscore name 'author_email' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'home-page' in 'metadata' (setup.cfg), please use the underscore name 'home_page' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'home-page' will not be supported in future
+          versions. Please use the underscore name 'home_page' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/dist.py:599: SetuptoolsDeprecationWarning: Invalid dash-separated key 'description-file' in 'metadata' (setup.cfg), please use the underscore name 'description_file' instead.
+  !!
+
+          ********************************************************************************
+          Usage of dash-separated 'description-file' will not be supported in future
+          versions. Please use the underscore name 'description_file' instead.
+
+          By 2026-Mar-03, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+
+          See https://setuptools.pypa.io/en/latest/userguide/declarative_config.html for details.
+          ********************************************************************************
+
+  !!
+    opt = self._enforce_underscore(opt, section)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/__init__.py:92: _DeprecatedInstaller: setuptools.installer and fetch_build_eggs are deprecated.
+  !!
+
+          ********************************************************************************
+          Requirements should be satisfied by a PEP 517 installer.
+          If you are using pip, you can try `pip install --use-pep517`.
+
+          By 2025-Oct-31, you need to update your project and remove deprecated calls
+          or your builds will no longer be supported.
+          ********************************************************************************
+
+  !!
+    dist.fetch_build_eggs(dist.setup_requires)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'tests_require'
+    warnings.warn(msg)
+  /opt/hostedtoolcache/Python/3.10.18/x64/lib/python3.10/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'use_pyscaffold'
+    warnings.warn(msg)
+  running clean
+  removing 'build/temp.linux-x86_64-cpython-310' (and everything under it)
+  removing 'build/lib.linux-x86_64-cpython-310' (and everything under it)
+  'build/bdist.linux-x86_64' does not exist -- can't clean it
+  'build/scripts-3.10' does not exist -- can't clean it
+  removing 'build'
+Failed to build pyqrllib
+ERROR: Failed to build one or more wheels

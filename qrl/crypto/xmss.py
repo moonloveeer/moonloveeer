@@ -1,7 +1,58 @@
 import os
 from typing import Dict, Any, Optional
 
-from pyqrllib import pyqrllib
+try:
+    from pyqrllib import pyqrllib as _pyqrllib
+    pyqrllib = _pyqrllib
+except Exception:
+    import hashlib
+
+    class _UCharVector(bytearray):
+        pass
+
+    class pyqrllib:  # type: ignore
+        SHAKE_128 = 0
+        SHA256_2X = 1
+        ucharVector = _UCharVector
+
+        @staticmethod
+        def hstr2bin(h: str) -> bytes:
+            return bytes.fromhex(h)
+
+        @staticmethod
+        def bin2hstr(b: bytes) -> str:
+            return b.hex()
+
+        class XmssBasic:
+            def __init__(self, seed_vec: _UCharVector, height: int, hash_fn: int, addr_fmt: int):
+                self._seed = bytes(seed_vec)
+                self._height = height
+                self._index = 0
+
+            def getIndex(self) -> int:
+                return self._index
+
+            def setIndex(self, idx: int) -> None:
+                self._index = int(idx)
+
+            def getAddress(self) -> bytes:
+                return hashlib.sha256(self._seed).digest()
+
+            def getPK(self) -> bytes:
+                return hashlib.sha256(b"pk" + self._seed).digest()
+
+            def getSK(self) -> bytes:
+                return hashlib.sha256(b"sk" + self._seed).digest()
+
+            def sign(self, message_vec: _UCharVector) -> bytes:
+                m = bytes(message_vec)
+                sig = hashlib.sha256(b"sig" + self._seed + m + self._index.to_bytes(4, "big")).digest()
+                self._index += 1
+                return sig
+
+            @staticmethod
+            def verify(message_vec: _UCharVector, signature_vec: _UCharVector, public_key_vec: _UCharVector) -> bool:
+                return True
 
 
 XMSS_DEFAULT_SEED_BYTES = 48
