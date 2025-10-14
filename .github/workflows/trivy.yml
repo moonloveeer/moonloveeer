@@ -1,0 +1,61 @@
+name: Security Scan (Trivy)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  schedule:
+    - cron: '0 3 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: trivy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with: { submodules: false }
+
+      - name: Build local image for scan
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: app:scan
+
+      - name: Trivy FS scan (repo)
+        uses: aquasecurity/trivy-action@0.14.0
+        with:
+          scan-type: fs
+          format: sarif
+          output: trivy-fs.sarif
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH,MEDIUM
+          hide-progress: true
+
+      - name: Trivy Image scan (local)
+        uses: aquasecurity/trivy-action@0.14.0
+        with:
+          image-ref: app:scan
+          format: sarif
+          output: trivy-image.sarif
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH,MEDIUM
+          hide-progress: true
+
+      - name: Upload SARIF (FS)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-fs.sarif
+
+      - name: Upload SARIF (Image)
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-image.sarif
