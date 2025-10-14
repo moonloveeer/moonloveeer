@@ -17,6 +17,10 @@ nav:
       - Contributing Guide: developer/contributing.md
   - Security:
       - Hardening Checklist: security/hardening.md
+  - CI/CD:
+      - Pipeline Overview: ci/overview.md
+  - Testing:
+      - Strategy: testing/strategy.md
   - Whitepaper: WHITEPAPER.md
 theme:
   name: material
