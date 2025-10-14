@@ -16,6 +16,7 @@ Security controls implemented in this repository and recommended deployment prac
 ## CI/CD security
 - CodeQL, Trivy (FS + image), pip-audit, and bandit run in GitHub Actions.
 - Release workflow signs artifacts through GitHub Releases and attaches SBOM + vendor wheel.
+- Gitleaks secrets scanning runs on push, PR, and weekly schedule; SARIF results surface in GitHub code scanning.
 
 ## Deployment guidance
 - Set `SECRET_KEY`, `WEB_WALLET_DATA_DIR`, and disable `AUTO_MINE_ON_SEND` in production `.env`.
