@@ -1,7 +1,7 @@
 site_name: QRL Wallet
 nav:
   - Home: index.md
-  - Overview: README.md
+  - Overview: overview.md
   - Whitepaper: WHITEPAPER.md
 theme:
   name: mkdocs
