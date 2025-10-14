@@ -1,13 +1,52 @@
 site_name: QRL Wallet
+site_description: Quantum-resistant wallet and node documentation
+repo_url: https://github.com/moonloveeer/moonloveeer
+repo_name: moonloveeer/moonloveeer
 nav:
   - Home: index.md
   - Overview: overview.md
+  - Wallet:
+      - Wallet Quickstart: wallet/quickstart.md
+  - Node:
+      - Node Setup: node/setup.md
+  - Mining:
+      - Getting Started: mining/getting-started.md
+  - APIs:
+      - Wallet REST API: apis/wallet.md
+  - Developer:
+      - Contributing Guide: developer/contributing.md
+  - Security:
+      - Hardening Checklist: security/hardening.md
   - Whitepaper: WHITEPAPER.md
 theme:
-  name: mkdocs
+  name: material
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: teal
+    - scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - header.autohide
+    - search.suggest
+    - search.highlight
+    - toc.integrate
 markdown_extensions:
   - admonition
   - toc
   - tables
   - fenced_code
   - codehilite
+  - attr_list
+  - md_in_html
+plugins:
+  - search

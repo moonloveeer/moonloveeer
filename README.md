@@ -165,6 +165,13 @@ Blockchain data and wallet information are stored in the `~/.qrl/` directory by 
 - **Patch fork**: Apply the `<cstdint>` fix from upstream issues and publish a patched wheel (e.g. `pyqrllib==2.1.0.post1`) to an internal index so GitHub Actions can install it.
 - **Verification**: Re-enable the package in `requirements.txt` and CI once the wheel builds on Python 3.10+, and add regression tests covering XMSS signing to confirm compatibility.
 
+## Documentation
+
+- Live site: https://moonloveeer.github.io/moonloveeer/
+- Built with MkDocs Material (`mkdocs.yml`) and deployed via GitHub Pages (`.github/workflows/docs.yml`).
+- Navigation covers wallet quickstart, node setup, mining, REST APIs, developer onboarding, and security hardening.
+- Work locally with `make docs-serve` (requires `mkdocs-material`).
+
 ## Web Wallet
 
 - Start the wallet: `python run_web_wallet.py`
