@@ -43,6 +43,27 @@ jobs:
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Build image (load for smoke test)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          load: true
+          tags: wallet-ci:${{ github.sha }}
+
+      - name: Smoke test /healthz
+        run: |
+          set -euo pipefail
+          docker run -d --name qrl-wallet-test -p 5001:5001 -e PORT=5001 wallet-ci:${GITHUB_SHA}
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5001/healthz >/dev/null; then
+              ok=1; break; fi
+            sleep 2
+          done
+          docker logs qrl-wallet-test || true
+          docker rm -f qrl-wallet-test
+          if [ "${ok:-0}" != "1" ]; then echo "Smoke test failed"; exit 1; fi
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:

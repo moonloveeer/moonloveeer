@@ -23,4 +23,6 @@ ENV PORT=5001
 EXPOSE 5001
 
 # Use Gunicorn for production serving; expand $PORT at runtime
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD python -c "import os,sys,urllib.request; url=f'http://127.0.0.1:{os.environ.get('PORT','5001')}/healthz';\ntry:\n r=urllib.request.urlopen(url, timeout=3);\n sys.exit(0 if getattr(r,'status',200)==200 else 1)\nexcept Exception:\n sys.exit(1)"
 CMD gunicorn -w 2 -k gthread -b 0.0.0.0:${PORT:-5001} qrl.web_wallet:app
