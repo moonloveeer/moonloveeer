@@ -513,6 +513,13 @@ def index():
                            pending_received_count=pending_received_count,
                            recent_activity=recent_activity)
 
+@app.route('/healthz')
+def healthz():
+    return jsonify({
+        'status': 'ok',
+        'timestamp': int(time())
+    }), 200
+
 @app.route('/whitepaper')
 def whitepaper():
     try:

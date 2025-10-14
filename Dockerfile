@@ -22,4 +22,5 @@ COPY . .
 ENV PORT=5001
 EXPOSE 5001
 
-CMD ["python", "run_web_wallet.py"]
+# Use Gunicorn for production serving; expand $PORT at runtime
+CMD gunicorn -w 2 -k gthread -b 0.0.0.0:${PORT:-5001} qrl.web_wallet:app
