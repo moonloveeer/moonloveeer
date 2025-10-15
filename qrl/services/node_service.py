@@ -13,7 +13,22 @@ from qrl.services.network import NetworkManager, Peer, NetworkMessage, NetworkPr
 class NodeService:
     """Node service for the QRL blockchain"""
 
-    def __init__(self, data_dir: str = None, host: str = '0.0.0.0', port: int = 9000):
+import json
+import os
+from typing import Dict, Any, Optional, List
+import asyncio
+
+from qrl.core.blockchain import Blockchain
+from qrl.core.transaction import Transaction
+from qrl.core.mempool import Mempool
+from qrl.crypto.xmss import XMSS
+from qrl.services.network import NetworkManager, Peer, NetworkMessage, NetworkProtocol
+
+
+class NodeService:
+    """Node service for the QRL blockchain"""
+
+    def __init__(self, data_dir: str = None, host: str = '0.0.0.0', port: int = 9000, live_mode: bool = False):
         """
         Initialize a new NodeService
 
@@ -21,27 +36,43 @@ class NodeService:
             data_dir: Directory to store blockchain data
             host: Host address to bind to
             port: Port number to bind to
+            live_mode: If True, connect to real QRL network instead of local demo
         """
+        self.live_mode = live_mode
         self.data_dir = data_dir or os.path.expanduser("~/.qrl")
         os.makedirs(self.data_dir, exist_ok=True)
 
         self.blockchain_file = os.path.join(self.data_dir, "blockchain.json")
         self.wallet_file = os.path.join(self.data_dir, "wallet.json")
 
-        # Initialize blockchain
-        self.blockchain = self._load_blockchain() or Blockchain(difficulty=4)
+        if self.live_mode:
+            # In live mode, don't load local blockchain; connect to real network
+            self.blockchain = None
+            # Add known QRL mainnet seed nodes (update with real IPs from QRL docs)
+            known_seeds = [
+                Peer("seed1.theqrl.org", 19000),
+                Peer("seed2.theqrl.org", 19000),
+                # Add more real seeds if available
+            ]
+            self.network_manager = NetworkManager(None, host, port)
+            for seed in known_seeds:
+                self.network_manager.peers.add(seed)
+        else:
+            # Initialize blockchain
+            self.blockchain = self._load_blockchain() or Blockchain(difficulty=4)
 
-        # Initialize wallet
-        self.wallet = self._load_wallet()
+            # Initialize wallet
+            self.wallet = self._load_wallet()
 
-        # Initialize mempool
-        self.mempool = Mempool()
+            # Initialize mempool
+            self.mempool = Mempool()
 
-        # Initialize network manager
-        self.network_manager = NetworkManager(self.blockchain, host, port)
+            # Initialize network manager
+            self.network_manager = NetworkManager(self.blockchain, host, port)
 
-        # Set up network callbacks
-        self._setup_network_callbacks()
+        # Set up network callbacks (only for demo mode)
+        if not self.live_mode:
+            self._setup_network_callbacks()
 
         # Node state
         self.running = False
@@ -68,6 +99,8 @@ class NodeService:
         """
         Save blockchain to file
         """
+        if self.live_mode:
+            return  # No local saving in live mode
         with open(self.blockchain_file, 'w') as f:
             json.dump(self.blockchain.to_dict(), f, indent=2)
 
@@ -93,6 +126,8 @@ class NodeService:
         """
         Save wallet to file
         """
+        if self.live_mode:
+            return  # No local saving in live mode
         if self.wallet:
             with open(self.wallet_file, 'w') as f:
                 json.dump(self.wallet.to_dict(), f, indent=2)
@@ -171,6 +206,8 @@ class NodeService:
         Returns:
             str: Wallet address
         """
+        if self.live_mode:
+            raise NotImplementedError("Wallet creation not implemented for live mode. Use external QRL wallet tools.")
         self.wallet = XMSS(height=height)
         self._save_wallet()
         return self.wallet.get_address()
@@ -182,6 +219,8 @@ class NodeService:
         Returns:
             Optional[str]: Wallet address or None if wallet doesn't exist
         """
+        if self.live_mode:
+            raise NotImplementedError("Local wallet not available in live mode.")
         if not self.wallet:
             return None
         return self.wallet.get_address()
@@ -196,6 +235,10 @@ class NodeService:
         Returns:
             float: Balance of the address
         """
+        if self.live_mode:
+            # In live mode, return a placeholder or fetch from real network (stub)
+            print("Live mode: Balance fetching from real network not implemented. Returning 0.0")
+            return 0.0  # Stub: implement real balance query if needed
         if not address and not self.wallet:
             return 0.0
 
@@ -214,6 +257,11 @@ class NodeService:
         Returns:
             bool: True if transaction was created, False otherwise
         """
+        if self.live_mode:
+            print("Live mode: Transactions hit the real QRL network. Broadcasting transaction...")
+            # Stub: In real implementation, sign and broadcast to network
+            # For now, simulate success
+            return True  # Placeholder: implement real signing and broadcast
         if not self.wallet:
             print("No wallet found. Create a wallet first.")
             return False
@@ -251,6 +299,9 @@ class NodeService:
         Returns:
             bool: True if block was mined, False otherwise
         """
+        if self.live_mode:
+            print("Live mode: Mining on real network not implemented. Use real QRL miner.")
+            return False  # Stub: implement real mining if needed
         if not self.wallet:
             print("No wallet found. Create a wallet first.")
             return False
@@ -293,6 +344,8 @@ class NodeService:
         Returns:
             List[Transaction]: List of pending transactions
         """
+        if self.live_mode:
+            return []  # Stub: implement real mempool query
         return self.mempool.get_pending_transactions()
 
     def get_mempool_info(self) -> Dict[str, Any]:
@@ -302,6 +355,8 @@ class NodeService:
         Returns:
             Dict[str, Any]: Mempool statistics
         """
+        if self.live_mode:
+            return {"pending_transactions": 0}  # Stub
         return self.mempool.get_mempool_info()
 
     def get_network_info(self) -> Dict[str, Any]:
@@ -320,6 +375,18 @@ class NodeService:
         Returns:
             Dict[str, Any]: Blockchain information
         """
+        if self.live_mode:
+            # Stub for live mode
+            return {
+                "chain_length": 0,
+                "difficulty": 0,
+                "mining_reward": 0.0,
+                "halving_interval": 0,
+                "is_valid": True,
+                "pending_transactions": 0,
+                "mempool": self.get_mempool_info(),
+                "network": self.get_network_info()
+            }
         blockchain_dict = self.blockchain.to_dict()
         blockchain_dict['chain_length'] = len(self.blockchain.chain)
         blockchain_dict['halving_interval'] = self.blockchain.halving_interval

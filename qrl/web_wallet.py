@@ -289,7 +289,8 @@ def login_required(f):
     return decorated_function
 
 # Initialize node service with isolated data directory
-node_service = NodeService(data_dir=WEB_WALLET_DATA_DIR)
+QRL_LIVE_MODE = os.getenv('QRL_LIVE_MODE', 'false').lower() in ('1', 'true', 'yes')
+node_service = NodeService(data_dir=WEB_WALLET_DATA_DIR, live_mode=QRL_LIVE_MODE)
 
 # Forms
 class LoginForm(FlaskForm):
@@ -342,10 +343,10 @@ def index():
             'timestamp': block.timestamp
         })
 
-    current_reward = float(blockchain_info.get('mining_reward', node_service.blockchain.mining_reward))
-    difficulty = blockchain_info.get('difficulty', node_service.blockchain.difficulty)
-    pending_txs = blockchain_info.get('pending_transactions', len(node_service.blockchain.pending_transactions))
-    halving_interval = blockchain_info.get('halving_interval', node_service.blockchain.halving_interval)
+    current_reward = float(blockchain_info.get('mining_reward', node_service.blockchain.mining_reward if node_service.blockchain else 0.0))
+    difficulty = blockchain_info.get('difficulty', node_service.blockchain.difficulty if node_service.blockchain else 0)
+    pending_txs = blockchain_info.get('pending_transactions', len(node_service.blockchain.pending_transactions) if node_service.blockchain else 0)
+    halving_interval = blockchain_info.get('halving_interval', node_service.blockchain.halving_interval if node_service.blockchain else 0)
 
     if halving_interval and halving_interval > 0:
         next_halving = ((chain_height // halving_interval) + 1) * halving_interval
@@ -369,7 +370,7 @@ def index():
         chart_supply = [0.0]
 
     market_stats = [
-        {"label": "Network", "value": "QRL Local Devnet"},
+        {"label": "Network", "value": "QRL Mainnet" if QRL_LIVE_MODE else "QRL Local Devnet"},
         {"label": "Chain Height", "value": f"{chain_height:,}"},
         {"label": "Total Supply", "value": f"{total_supply:,.8f} QRL"},
         {"label": "Current Mining Reward", "value": f"{current_reward:,.8f} QRL"},
