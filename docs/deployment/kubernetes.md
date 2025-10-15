@@ -40,6 +40,7 @@ If the GHCR package is public, you can omit `imagePullSecrets` in the deployment
 - Readiness/liveness probes target `/healthz` on port `5001`.
 - Resource requests: 250m CPU / 256Mi memory. Limits: 500m CPU / 512Mi memory.
 - Environment variables disable auto-mining and inject the secret key securely.
+- GitHub Actions workflow `.github/workflows/k8s-lint.yml` runs kubeconform against the manifests on every push/PR touching `k8s/`.
 
 ## Ingress / Exposure
 `k8s/service.yaml` defines a `ClusterIP` service. Add an Ingress or LoadBalancer service depending on cluster requirements.
