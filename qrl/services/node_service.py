@@ -2,21 +2,7 @@ import json
 import os
 from typing import Dict, Any, Optional, List
 import asyncio
-
-from qrl.core.blockchain import Blockchain
-from qrl.core.transaction import Transaction
-from qrl.core.mempool import Mempool
-from qrl.crypto.xmss import XMSS
-from qrl.services.network import NetworkManager, Peer, NetworkMessage, NetworkProtocol
-
-
-class NodeService:
-    """Node service for the QRL blockchain"""
-
-import json
-import os
-from typing import Dict, Any, Optional, List
-import asyncio
+import requests  # Add for API calls
 
 from qrl.core.blockchain import Blockchain
 from qrl.core.transaction import Transaction
@@ -236,9 +222,24 @@ class NodeService:
             float: Balance of the address
         """
         if self.live_mode:
-            # In live mode, return a placeholder or fetch from real network (stub)
-            print("Live mode: Balance fetching from real network not implemented. Returning 0.0")
-            return 0.0  # Stub: implement real balance query if needed
+            # In live mode, fetch from real QRL network
+            if not address:
+                return 0.0
+            try:
+                print(f"Fetching live balance for {address} from QRL network...")
+                # Use QRL public API to get balance
+                url = f"https://api.theqrl.org/api/address/{address}/balance"
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                data = response.json()
+                balance_quanta = data.get('balance', 0)
+                # QRL balances are in quanta (1 QRL = 10^9 quanta)
+                balance_qrl = float(balance_quanta) / 1e9
+                print(f"Live balance for {address}: {balance_qrl} QRL")
+                return balance_qrl
+            except Exception as e:
+                print(f"Error fetching live balance: {e}")
+                return 0.0
         if not address and not self.wallet:
             return 0.0
 
