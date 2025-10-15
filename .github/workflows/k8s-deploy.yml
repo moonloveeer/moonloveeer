@@ -1,0 +1,39 @@
+name: Deploy to Kubernetes (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: "Kubernetes namespace"
+        required: true
+        default: "default"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with: { submodules: false }
+
+      - name: Set up Kubeconfig
+        env:
+          KUBE_CONFIG_BASE64: ${{ secrets.KUBE_CONFIG_BASE64 }}
+        run: |
+          if [ -z "$KUBE_CONFIG_BASE64" ]; then
+            echo "KUBE_CONFIG_BASE64 secret is required" >&2
+            exit 1
+          fi
+          echo "$KUBE_CONFIG_BASE64" | base64 -d > $HOME/.kubeconfig
+          echo "KUBECONFIG=$HOME/.kubeconfig" >> $GITHUB_ENV
+
+      - name: Set namespace
+        run: |
+          kubectl config set-context --current --namespace "${{ github.event.inputs.namespace }}"
+
+      - name: Apply manifests
+        run: |
+          kubectl apply -f k8s/

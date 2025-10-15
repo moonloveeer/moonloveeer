@@ -21,6 +21,8 @@ nav:
       - Pipeline Overview: ci/overview.md
   - Testing:
       - Strategy: testing/strategy.md
+  - Deployment:
+      - Kubernetes: deployment/kubernetes.md
   - Whitepaper: WHITEPAPER.md
 theme:
   name: material

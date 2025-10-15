@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qrl-wallet
+  labels:
+    app: qrl-wallet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qrl-wallet
+  template:
+    metadata:
+      labels:
+        app: qrl-wallet
+    spec:
+      containers:
+        - name: wallet
+          image: ghcr.io/moonloveeer/moonloveeer:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5001
+          env:
+            - name: PORT
+              value: "5001"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: qrl-wallet-secrets
+                  key: secret-key
+            - name: AUTO_MINE_ON_SEND
+              value: "false"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 5001
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5001
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+      imagePullSecrets:
+        - name: ghcr-credentials
