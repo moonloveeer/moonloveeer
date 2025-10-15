@@ -54,8 +54,10 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-fs.sarif
+          category: trivy-fs
 
       - name: Upload SARIF (Image)
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-image.sarif
+          category: trivy-image
