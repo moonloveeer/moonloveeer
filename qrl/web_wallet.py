@@ -11,6 +11,8 @@ from datetime import datetime, timedelta, timezone
 from time import time
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session, make_response, g
 from flask_cors import CORS  # Add this import
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import jwt
 from functools import wraps
 from flask_wtf import FlaskForm
@@ -64,7 +66,21 @@ CORS(app,
          }
      })
 
-logging.basicConfig(level=logging.INFO)
+# Initialize rate limiter
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(os.path.join(WEB_WALLET_DATA_DIR, 'security.log')),
+        logging.StreamHandler()
+    ]
+)
 logger = logging.getLogger("qrl.web_wallet")
 
 RATE_LIMIT_SETTINGS = {
@@ -542,6 +558,7 @@ def whitepaper():
     return render_template('whitepaper.html', content=Markup(html))
 
 @app.route('/login', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")
 def login():
     if request.method == 'POST':
         return redirect(url_for('login'))
@@ -845,6 +862,7 @@ def whoami():
     }), 200
 
 @app.route('/mine', methods=['POST'])
+@limiter.limit("10 per minute")
 @login_required
 def mine():
     try:
@@ -933,6 +951,7 @@ def simulate_purchase():
         return redirect(url_for('buy'))
 
 @app.route('/send', methods=['POST'])
+@limiter.limit("20 per minute")
 @login_required
 def send():
     form = TransferForm()

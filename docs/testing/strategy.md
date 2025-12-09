@@ -5,6 +5,7 @@ Testing ensures correctness across consensus logic, cryptography, and the web wa
 ## Unit and integration tests
 - `tests/test_blockchain.py`, `tests/test_transaction.py`, and related modules validate core blockchain behaviors (mining rewards, transaction validation).
 - Wallet integration tests exercise Flask routes using test clients.
+- CLI smoke tests (`tests/test_cli_commands.py`) patch `NodeService` and execute Click commands to ensure wallet generation, info, transfers, and mining toggles behave as expected.
 
 ## Property-based testing
 - `tests/test_transaction_props.py` uses Hypothesis to probe invariant properties of transaction creation and validation, catching corner cases beyond hand-written tests.

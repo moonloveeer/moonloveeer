@@ -434,6 +434,61 @@
                 }
             });
         }
+        
+        // Add loading state to send form
+        const sendForm = document.getElementById('send-form');
+        if (sendForm) {
+            sendForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const submitButton = sendForm.querySelector('button[type="submit"]');
+                const originalText = submitButton.textContent;
+                
+                // Disable button and show loading
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending...';
+                
+                try {
+                    const formData = new FormData(sendForm);
+                    const response = await fetch(sendForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin'
+                    });
+                    
+                    if (response.ok) {
+                        // Success - reload page or show success message
+                        window.location.reload();
+                    } else {
+                        const error = await response.text();
+                        // Show error message
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+                        alertDiv.innerHTML = `
+                            ${error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        `;
+                        sendForm.appendChild(alertDiv);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+                    alertDiv.innerHTML = `
+                        Error sending transaction. Please try again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    sendForm.appendChild(alertDiv);
+                } finally {
+                    // Re-enable button
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalText;
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

@@ -1,0 +1,4 @@
+# file: /Users/rain/Desktop/QRL/qrl/cli/commands.py
+# hypothesis_version: 6.141.0
+
+['--amount', '--dst', '--height', 'Amount to transfer', 'Destination address', 'Failed to mine block', 'Merkle tree height', '__main__', 'blockchain_info', 'chain_length', 'halving_interval', 'mining_start', 'tx_transfer', 'wallet_gen', 'wallet_info']

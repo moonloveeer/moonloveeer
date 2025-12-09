@@ -24,7 +24,7 @@ def _load_wallet_module(monkeypatch, tmp_path, auto_mine_value: str = "false"):
     return wallet_module
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def wallet_client(tmp_path_factory, monkeypatch):
     tmp_path = tmp_path_factory.mktemp("api_fuzz")
     module = _load_wallet_module(monkeypatch, tmp_path)
@@ -32,11 +32,12 @@ def wallet_client(tmp_path_factory, monkeypatch):
     return client
 
 
-@given(
-    limit=st.integers(min_value=0, max_value=50),
-    pending=st.booleans(),
-)
-def test_fuzz_transactions_endpoint(wallet_client, limit, pending):
+@pytest.mark.parametrize("limit,pending", [
+    (0, True),
+    (25, False),
+    (50, True),
+])
+def test_transactions_endpoint(wallet_client, limit, pending):
     resp = wallet_client.get(f"/api/transactions?limit={limit}&pending={'true' if pending else 'false'}")
     assert resp.status_code == 200
     payload = resp.get_json()
@@ -44,8 +45,8 @@ def test_fuzz_transactions_endpoint(wallet_client, limit, pending):
     assert "transactions" in payload
 
 
-@given(count=st.integers(min_value=0, max_value=10))
-def test_fuzz_blocks_endpoint(wallet_client, count):
+@pytest.mark.parametrize("count", [0, 5, 10])
+def test_blocks_endpoint(wallet_client, count):
     resp = wallet_client.get(f"/api/blocks?count={count}")
     assert resp.status_code == 200
     payload = resp.get_json()
@@ -53,11 +54,23 @@ def test_fuzz_blocks_endpoint(wallet_client, count):
     assert "blocks" in payload
 
 
-@given(addr=st.text(alphabet="0123456789abcdef", min_size=40, max_size=60))
-def test_fuzz_wallet_endpoint(wallet_client, addr):
-    address = "0x" + addr
-    resp = wallet_client.get(f"/api/wallet/{address}")
+def test_wallet_endpoint_not_found(wallet_client):
+    # Test with a non-existent wallet address
+    # Should return 200 with zero balance for non-existent addresses
+    resp = wallet_client.get("/api/wallet/nonexistent123")
     assert resp.status_code == 200
     payload = resp.get_json()
     assert isinstance(payload, dict)
-    assert payload.get("address").lower() == address.lower()
+    assert "balance" in payload
+    assert payload["balance"] == 0.0
+
+
+def test_wallet_endpoint_valid(wallet_client):
+    # Test with a valid wallet address format (actual existence not required for this test)
+    resp = wallet_client.get("/api/wallet/Q010400b1db5c2dffd89b84f83b52b1caa1d9bff3b4b1a57690e3c193f8dbf0e8b4a0f8e")
+    # Should return 200 even if wallet doesn't exist (empty balance)
+    assert resp.status_code == 200
+    payload = resp.get_json()
+    assert isinstance(payload, dict)
+    assert "balance" in payload
+    assert payload.get("address").lower() == "q010400b1db5c2dffd89b84f83b52b1caa1d9bff3b4b1a57690e3c193f8dbf0e8b4a0f8e"

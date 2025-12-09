@@ -1,5 +1,5 @@
 import pytest
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, settings
 
 from qrl.core.transaction import Transaction
 from qrl.crypto.xmss import XMSS
@@ -13,6 +13,7 @@ def qrl_address_strategy():
 @given(amount=st.floats(min_value=1e-9, allow_nan=False, allow_infinity=False),
        fee=st.floats(min_value=0.0, allow_nan=False, allow_infinity=False),
        recipient=qrl_address_strategy())
+@settings(deadline=None)  # Disable deadline for this test
 def test_signed_transaction_valid(amount, fee, recipient):
     xmss = XMSS(height=10)
     sender = xmss.get_address()

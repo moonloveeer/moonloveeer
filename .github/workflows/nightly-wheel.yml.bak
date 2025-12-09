@@ -1,0 +1,59 @@
+name: Nightly Wheel Prebuild
+
+on:
+  schedule:
+    - cron: "0 09 * * *"  # Daily at 09:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: nightly-wheel-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prebuild-wheel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        python: [ '3.12' ]
+    steps:
+      - uses: actions/checkout@v4
+        with: { submodules: false }
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
+      - name: Install build toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends build-essential cmake libssl-dev libgmp-dev libboost-all-dev swig rustc cargo pkg-config python3-dev
+      - name: Cache pyqrllib wheel
+        id: cache-wheel
+        uses: actions/cache@v4
+        with:
+          path: wheelhouse/
+          key: pyqrllib-wheel-${{ runner.os }}-py${{ matrix.python }}-v1-1.2.4
+      - name: Build pyqrllib wheel
+        if: steps.cache-wheel.outputs.cache-hit != 'true'
+        env:
+          CMAKE_GENERATOR: Ninja
+          CXXFLAGS: -include stdint.h
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip wheel setuptools cmake ninja
+          mkdir -p wheelhouse
+          python -m pip wheel -w wheelhouse "pyqrllib==1.2.4" 2>&1 | tee wheelhouse/pyqrllib-build.log
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-pyqrllib-build-logs-py${{ matrix.python }}
+          path: wheelhouse/pyqrllib-build.log
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyqrllib-wheel-py${{ matrix.python }}
+          path: wheelhouse/pyqrllib-*.whl
+          retention-days: 14

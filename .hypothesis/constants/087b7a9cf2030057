@@ -1,0 +1,4 @@
+# file: /Users/rain/Desktop/QRL/qrl/services/node_service.py
+# hypothesis_version: 6.141.0
+
+[0.0, 1000000000.0, 9000, 19000, '0', '0.0.0.0', 'balance', 'block', 'blockchain.json', 'chain_length', 'difficulty', 'halving_interval', 'is_valid', 'mempool', 'mining_reward', 'network', 'pending_transactions', 'r', 'seed1.theqrl.org', 'seed2.theqrl.org', 'transaction', 'w', 'wallet.json', '~/.qrl']

@@ -44,4 +44,16 @@ if __name__ == '__main__':
 
     print(f"Starting QRL Web Wallet on http://localhost:{port}")
     print("Press Ctrl+C to stop the server")
-    app.run(debug=True, host='0.0.0.0', port=port)
+    
+    # Explicitly set up the app context
+    with app.app_context():
+        try:
+            # Enable debug mode for better error messages
+            app.debug = True
+            # Run the app with explicit host and port
+            app.run(host='0.0.0.0', port=port, use_reloader=False, threaded=True)
+        except Exception as e:
+            print(f"Error starting server: {e}")
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
