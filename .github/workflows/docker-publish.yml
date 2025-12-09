@@ -44,7 +44,7 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build image (load for smoke test)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: false
@@ -65,7 +65,7 @@ jobs:
           if [ "${ok:-0}" != "1" ]; then echo "Smoke test failed"; exit 1; fi
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
