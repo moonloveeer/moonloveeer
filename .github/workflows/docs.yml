@@ -36,7 +36,7 @@ jobs:
           cp README.md docs/overview.md
           mkdocs build --strict --site-dir site
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: site
 
